@@ -1,7 +1,5 @@
-/**
- * @author akiyko
- * @since 7/19/2019.
- */
+
+
 public class Converter {
     public static ConfigParamsDto configParamsDto;
 

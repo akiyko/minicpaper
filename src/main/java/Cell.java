@@ -8,6 +8,7 @@ public class Cell implements Cloneable{
     public int tracePlayerNum = -1;
     public BonusType bonus = null;
     public Direction playerDirection = null;
+    public int[] realXy = null;
 
     public static Cell empty() {
         return new Cell();
@@ -16,7 +17,11 @@ public class Cell implements Cloneable{
     @Override
     public Cell clone() {
         try {
-            return (Cell) super.clone();
+            Cell res = (Cell) super.clone();
+            if(realXy != null) {
+                res.realXy = new int[]{realXy[0], realXy[1]};
+            }
+            return res;
         } catch (CloneNotSupportedException e) {
             throw new IllegalStateException(e);
         }

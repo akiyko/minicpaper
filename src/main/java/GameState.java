@@ -33,6 +33,7 @@ public class GameState {
             gameState.updateCell(playerDtoEntry.getValue().position, c-> {
                 c.playernum = playerNum;
                 c.playerDirection = playerDtoEntry.getValue().direction;
+                c.realXy = playerDtoEntry.getValue().position;
             });
 
             for (int[] terr : playerDtoEntry.getValue().territory) {
