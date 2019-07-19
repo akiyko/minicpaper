@@ -3,6 +3,15 @@ import org.junit.Test;
 import java.io.*;
 
 public class JsonHelperTest {
+    static ConfigDto configDto;
+    static {
+        try(Reader r = readFile("configsample1.json")) {
+            configDto = JsonHelper.readConfig(r);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Test
     public void testReadConfig() {
         try(Reader r = readFile("configsample1.json")) {
@@ -19,6 +28,8 @@ public class JsonHelperTest {
     public void testReadTick() {
         try(Reader r = readFile("ticksample1.json")) {
             TickDto tickDto = JsonHelper.readTick(r);
+
+            GameState gameState = GameState.fromTick(tickDto, configDto);
 
             System.out.println(tickDto);
         } catch (IOException e) {
