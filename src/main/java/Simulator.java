@@ -4,7 +4,7 @@ public class Simulator {
         GameState gs = initial.clone();
 
 
-
+        return null;
 
     }
 

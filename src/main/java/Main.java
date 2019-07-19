@@ -12,17 +12,22 @@ public class Main {
         return array[rnd];
     }
 
-    public static void main(String args[]) {
+    public static void main(String args[]) throws IOException {
         String[] commands = {"left", "right", "up", "down"};
-        Scanner scanner = new Scanner(System.in);
+        BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
+        ConfigDto configDto = (ConfigDto) JsonHelper.readNextObject(r);
+        Converter.configParamsDto = configDto.params;
+
         while (true) {
-            String input = scanner.next();
-            System.err.println(input);
-//            System.err.println("==============================");
-            String command = Main.getRandom(commands);
-            if(input.contains("type")) {
+            Object nextTick = JsonHelper.readNextObject(r);
+            if (nextTick instanceof TickDto) {
+                String command = Main.getRandom(commands);
                 System.out.printf("{\"command\": \"%s\"}\n", command);
+
             }
+//            System.err.println(input);
+//            System.err.println("==============================");
+
         }
 
 

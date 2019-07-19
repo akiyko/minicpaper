@@ -2,6 +2,9 @@ import org.junit.Test;
 
 import java.io.*;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 public class JsonHelperTest {
     static ConfigDto configDto;
     static {
@@ -37,8 +40,28 @@ public class JsonHelperTest {
         }
     }
 
+    @Test
+    public void testReadInput() {
+        try(BufferedReader r = readFile("gametracesample1.txt")) {
+            ConfigDto c = (ConfigDto) JsonHelper.readNextObject(r);
+            TickDto t = (TickDto) JsonHelper.readNextObject(r);
+            t = (TickDto) JsonHelper.readNextObject(r);
+            t = (TickDto) JsonHelper.readNextObject(r);
 
-    static Reader readFile(String file) {
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testIsValidJson() {
+        assertFalse(JsonHelper.isValidJson("sdfsdfs {}"));
+        assertTrue(JsonHelper.isValidJson("{}"));
+    }
+
+    static BufferedReader readFile(String file) {
         return new BufferedReader(new InputStreamReader(ClassLoader.getSystemClassLoader().getResourceAsStream(file)));
     }
 }
