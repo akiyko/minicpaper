@@ -1,0 +1,25 @@
+{
+  "type": "tick",
+  "params": {
+    "players": {
+      "i": {
+        "score": 0,
+        "direction": "right",
+        "territory": [
+          [
+            465,
+            465
+          ]
+        ],
+        "lines": [],
+        "position": [
+          465,
+          465
+        ],
+        "bonuses": []
+      }
+    },
+    "bonuses": [],
+    "tick_num": 0
+  }
+}

@@ -1,4 +1,5 @@
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 public class GameState {
@@ -30,7 +31,7 @@ public class GameState {
         for (Map.Entry<String, PlayerDto> playerDtoEntry : tickDto.params.players.entrySet()) {
             int playerNum = Converter.playerNum(playerDtoEntry.getKey());
 
-            gameState.updateCell(playerDtoEntry.getValue().position, c-> {
+            gameState.updateCell(playerDtoEntry.getValue().position, c -> {
                 c.playernum = playerNum;
                 c.playerDirection = playerDtoEntry.getValue().direction;
                 c.realXy = playerDtoEntry.getValue().position;
@@ -65,11 +66,32 @@ public class GameState {
         updateFunction.accept(cells[cp.i][cp.j]);
     }
 
+    public void updateCell(Position cp, Consumer<Cell> updateFunction) {
+        updateFunction.accept(cells[cp.i][cp.j]);
+    }
+
+    public Cell at(Position cp) {
+        return cells[cp.i][cp.j];
+    }
+
+    public Optional<Position> findPlayer(int playerNum) {
+        for (int i = 0; i < cells.length; i++) {
+            for (int j = 0; j < cells[i].length; j++) {
+                if (cells[i][j].playernum == playerNum) {
+                    return Optional.of(Position.of(i,j));
+                }
+            }
+        }
+        return Optional.empty();
+    }
+
     @Override
-    public GameState clone()  {
+    public GameState clone() {
         GameState gameState = new GameState();
         gameState.configDto = this.configDto;
-        for (int i = 0; i < gameState.cells.length; i++) {
+        gameState.cells = new Cell[configDto.params.x_cells_count][];
+
+        for (int i = 0; i < cells.length; i++) {
             gameState.cells[i] = new Cell[configDto.params.y_cells_count];
         }
 

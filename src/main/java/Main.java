@@ -1,4 +1,3 @@
-import com.google.gson.stream.JsonReader;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -17,7 +16,6 @@ public class Main {
         BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
         ConfigDto configDto = (ConfigDto) JsonHelper.readNextObject(r);
         Converter.configParamsDto = configDto.params;
-
         while (true) {
             Object nextTick = JsonHelper.readNextObject(r);
             if (nextTick instanceof TickDto) {

@@ -6,7 +6,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class JsonHelperTest {
-    static ConfigDto configDto;
+    public static ConfigDto configDto;
     static {
         try(Reader r = readFile("configsample1.json")) {
             configDto = JsonHelper.readConfig(r);
@@ -60,6 +60,8 @@ public class JsonHelperTest {
         assertFalse(JsonHelper.isValidJson("sdfsdfs {}"));
         assertTrue(JsonHelper.isValidJson("{}"));
     }
+
+
 
     static BufferedReader readFile(String file) {
         return new BufferedReader(new InputStreamReader(ClassLoader.getSystemClassLoader().getResourceAsStream(file)));
