@@ -1,12 +1,10 @@
-//"type": "tick",
+package minic.dto;//"type": "tick",
 //        "params": {
 //        "players": {
 //        "2": {
 //        "score": 0,
 //        "direction": "left",
 //        "territory": [
-
-import java.util.List;
 
 public class TickDto {
     public String type;
@@ -15,7 +13,7 @@ public class TickDto {
 
     @Override
     public String toString() {
-        return "TickDto{" +
+        return "minic.dto.TickDto{" +
                 "type='" + type + '\'' +
                 ", params=" + params +
                 '}';

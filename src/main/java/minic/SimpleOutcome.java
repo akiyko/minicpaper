@@ -1,4 +1,4 @@
-
+package minic;
 
 public class SimpleOutcome {
     //invalid if 100% death

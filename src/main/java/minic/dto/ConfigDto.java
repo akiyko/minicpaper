@@ -1,4 +1,4 @@
-
+package minic.dto;
 
 public class ConfigDto {
     public String type;
@@ -13,7 +13,7 @@ public class ConfigDto {
 
     @Override
     public String toString() {
-        return "ConfigDto{" +
+        return "minic.dto.ConfigDto{" +
                 "type='" + type + '\'' +
                 ", params=" + params +
                 '}';

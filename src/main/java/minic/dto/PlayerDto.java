@@ -1,3 +1,5 @@
+package minic.dto;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -15,7 +17,7 @@ public class PlayerDto {
 
     @Override
     public String toString() {
-        return "PlayerDto{" +
+        return "minic.dto.PlayerDto{" +
                 "score=" + score +
                 ", direction=" + direction +
                 ", territory=" + Arrays.toString(territory) +

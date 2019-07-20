@@ -1,4 +1,6 @@
+package minic;
 
+import minic.dto.ConfigParamsDto;
 
 public class Converter {
     public static ConfigParamsDto configParamsDto;

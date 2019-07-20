@@ -1,3 +1,7 @@
+package minic;
+
+import minic.dto.Direction;
+
 import java.util.Objects;
 import java.util.Optional;
 
@@ -45,8 +49,8 @@ public class Position {
         return Optional.empty();
     }
 
-//    public static Position of(int i, int j) {
-//        return new Position(i, j);
+//    public static minic.Position of(int i, int j) {
+//        return new minic.Position(i, j);
 //    }
 
 

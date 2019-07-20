@@ -1,3 +1,5 @@
+package minic.dto;
+
 public class ConfigParamsDto {
     public int x_cells_count;
     public int y_cells_count;
@@ -13,7 +15,7 @@ public class ConfigParamsDto {
 
     @Override
     public String toString() {
-        return "ConfigParamsDto{" +
+        return "minic.dto.ConfigParamsDto{" +
                 "x_cells_count=" + x_cells_count +
                 ", y_cells_count=" + y_cells_count +
                 ", speed=" + speed +

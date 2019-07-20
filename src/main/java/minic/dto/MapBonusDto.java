@@ -1,3 +1,5 @@
+package minic.dto;
+
 import java.util.Arrays;
 
 public class MapBonusDto {
@@ -6,7 +8,7 @@ public class MapBonusDto {
 
     @Override
     public String toString() {
-        return "MapBonusDto{" +
+        return "minic.dto.MapBonusDto{" +
                 "type=" + type +
                 ", position=" + Arrays.toString(position) +
                 '}';

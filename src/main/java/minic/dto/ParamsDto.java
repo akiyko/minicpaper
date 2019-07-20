@@ -1,3 +1,5 @@
+package minic.dto;
+
 import java.util.List;
 import java.util.Map;
 
@@ -11,7 +13,7 @@ public class ParamsDto {
 
     @Override
     public String toString() {
-        return "ParamsDto{" +
+        return "minic.dto.ParamsDto{" +
                 "players=" + players +
                 ", bonuses=" + bonuses +
                 ", tick_num=" + tick_num +

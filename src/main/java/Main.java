@@ -1,8 +1,12 @@
 
+import minic.dto.ConfigDto;
+import minic.Converter;
+import minic.JsonHelper;
+import minic.dto.TickDto;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Scanner;
 import java.util.Random;
 
 public class Main {

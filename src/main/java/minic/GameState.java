@@ -1,3 +1,10 @@
+package minic;
+
+import minic.dto.ConfigDto;
+import minic.dto.MapBonusDto;
+import minic.dto.PlayerDto;
+import minic.dto.TickDto;
+
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;

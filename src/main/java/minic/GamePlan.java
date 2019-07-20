@@ -1,3 +1,7 @@
+package minic;
+
+import minic.dto.Direction;
+
 import java.util.Map;
 import java.util.TreeMap;
 

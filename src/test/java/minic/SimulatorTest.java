@@ -1,8 +1,12 @@
+package minic;
+
+import minic.dto.Direction;
+import minic.dto.TickDto;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.util.TreeMap;
 
 import static org.junit.Assert.*;
 
@@ -47,8 +51,8 @@ public class SimulatorTest {
         SimpleOutcome so = Simulator.checkMovePath(gs, gp, 0);
 
         assertFalse(so.valid);
-        assertEquals(-1, so.crossMyTraceCellTick);
-        assertEquals(expectedFinishOnMyTerrCellTick, so.finishOnMyTerrCellTick);
+        Assert.assertEquals(-1, so.crossMyTraceCellTick);
+        Assert.assertEquals(expectedFinishOnMyTerrCellTick, so.finishOnMyTerrCellTick);
     }
 
     void testCrossTraceAt(int up, int left, int down, int expectedCrossTick) {
@@ -62,7 +66,7 @@ public class SimulatorTest {
         SimpleOutcome so = Simulator.checkMovePath(gs, gp, 0);
 
         assertFalse(so.valid);
-        assertEquals(expectedCrossTick, so.crossMyTraceCellTick);
+        Assert.assertEquals(expectedCrossTick, so.crossMyTraceCellTick);
     }
 
 
@@ -77,8 +81,8 @@ public class SimulatorTest {
         SimpleOutcome so = Simulator.checkMovePath(gs, gp, 0);
 
         assertFalse(so.valid);
-        assertEquals(-1, so.crossMyTraceCellTick);
-        assertEquals(expectedBorderTick, so.crossBorderCellTick);
+        Assert.assertEquals(-1, so.crossMyTraceCellTick);
+        Assert.assertEquals(expectedBorderTick, so.crossBorderCellTick);
     }
 
 

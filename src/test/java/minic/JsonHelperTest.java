@@ -1,3 +1,7 @@
+package minic;
+
+import minic.dto.ConfigDto;
+import minic.dto.TickDto;
 import org.junit.Test;
 
 import java.io.*;

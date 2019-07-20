@@ -1,3 +1,8 @@
+package minic;
+
+import minic.dto.BonusType;
+import minic.dto.Direction;
+
 /**
  * @author akiyko
  * @since 7/19/2019.

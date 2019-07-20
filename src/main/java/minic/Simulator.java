@@ -1,3 +1,7 @@
+package minic;
+
+import minic.dto.Direction;
+
 import java.util.Optional;
 
 public class Simulator {

@@ -1,3 +1,5 @@
+package minic.dto;
+
 import java.util.Arrays;
 
 public class PlayerBonusDto {
@@ -6,7 +8,7 @@ public class PlayerBonusDto {
 
     @Override
     public String toString() {
-        return "PlayerBonusDto{" +
+        return "minic.dto.PlayerBonusDto{" +
                 "type=" + type +
                 ", position=" + Arrays.toString(position) +
                 '}';

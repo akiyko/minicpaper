@@ -1,3 +1,4 @@
+package minic;
 
 public class MoveOutcome {
     public int depth = 0;//how many ticks

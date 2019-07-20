@@ -1,7 +1,8 @@
+package minic;
+
+import minic.dto.Direction;
 import org.junit.Assert;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 
 public class PositionTest {
@@ -14,16 +15,16 @@ public class PositionTest {
         Position.of(1, 30).advance(Direction.up).ifPresent(p -> Assert.fail(p.toString()));
 
         Position.of(15, 15).advance(Direction.left).ifPresent(p -> {
-            assertEquals(Position.of(14, 15), p);
+            Assert.assertEquals(Position.of(14, 15), p);
         });
         Position.of(15, 15).advance(Direction.right).ifPresent(p -> {
-            assertEquals(Position.of(16, 15), p);
+            Assert.assertEquals(Position.of(16, 15), p);
         });
         Position.of(15, 15).advance(Direction.up).ifPresent(p -> {
-            assertEquals(Position.of(15, 16), p);
+            Assert.assertEquals(Position.of(15, 16), p);
         });
         Position.of(15, 15).advance(Direction.down).ifPresent(p -> {
-            assertEquals(Position.of(15, 14), p);
+            Assert.assertEquals(Position.of(15, 14), p);
         });
 
     }

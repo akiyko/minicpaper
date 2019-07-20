@@ -1,10 +1,13 @@
+package minic;
+
 import com.google.gson.Gson;
+import minic.dto.ConfigDto;
+import minic.dto.TickDto;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
-import java.util.Scanner;
 
 public class JsonHelper {
     static Gson gson = new Gson();
