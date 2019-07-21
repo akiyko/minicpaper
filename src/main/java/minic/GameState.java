@@ -1,9 +1,6 @@
 package minic;
 
-import minic.dto.ConfigDto;
-import minic.dto.MapBonusDto;
-import minic.dto.PlayerDto;
-import minic.dto.TickDto;
+import minic.dto.*;
 
 import java.util.Map;
 import java.util.Optional;
@@ -90,6 +87,10 @@ public class GameState {
             }
         }
         return Optional.empty();
+    }
+
+    public Optional<Direction> playerDirection(int playerNum) {
+        return findPlayer(playerNum).map(pos -> at(pos).playerDirection);
     }
 
     @Override

@@ -21,7 +21,7 @@ public class SimulatorTest {
 
     @Test
     public void testBorder() {
-        testReachWallAt(3,4,6,22);
+        testReachWallAt(3,4,7,23);
         testReachWallAt(30,40,100,16);
     }
 
@@ -40,7 +40,7 @@ public class SimulatorTest {
 
         SimpleOutcome so = Simulator.checkMovePath(gs, gp, 0);
 
-        assertFalse(so.valid);
+        assertTrue(so.valid);
         Assert.assertEquals(-1, so.crossMyTraceCellTick);
         Assert.assertEquals(expectedFinishOnMyTerrCellTick, so.finishOnMyTerrCellTick);
     }

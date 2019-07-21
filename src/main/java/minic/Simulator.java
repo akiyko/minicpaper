@@ -66,6 +66,7 @@ public class Simulator {
                 if (gs.at(simpleOutcome.lastPlayerPosition).terrPlayerNum != playernum
                         && gs.at(nextCell).terrPlayerNum == playernum && simpleOutcome.finishOnMyTerrCellTick == -1) {
                     simpleOutcome.finishOnMyTerrCellTick = cellTick;
+                    simpleOutcome.completeCellTick = cellTick;
                 }
                 simpleOutcome.lastPlayerPosition = nextCell;
             }
