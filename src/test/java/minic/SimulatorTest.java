@@ -2,6 +2,7 @@ package minic;
 
 import minic.dto.Direction;
 import minic.dto.TickDto;
+import minic.dto.Turn;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -11,17 +12,6 @@ import java.io.Reader;
 import static org.junit.Assert.*;
 
 public class SimulatorTest {
-    @Test
-    public void testPathOutcomeRightRight() {
-        GameState gs = standardGameState();
-
-        GamePlan gp = new GamePlan();
-        gp.movePlan.put(1, Direction.right);
-
-        SimpleOutcome so = Simulator.checkMovePath(gs, gp, 0);
-
-        assertFalse(so.valid);
-    }
 
     @Test
     public void testCross1() {
@@ -40,13 +30,13 @@ public class SimulatorTest {
         testCloseAt(2,3,4,4);
     }
 
-    void testCloseAt(int up, int left, int down, int expectedFinishOnMyTerrCellTick) {
+    void testCloseAt(int left1, int left2, int left3, int expectedFinishOnMyTerrCellTick) {
         GameState gs = standardGameState();
 
         GamePlan gp = new GamePlan();
-        gp.movePlan.put(up, Direction.up);
-        gp.movePlan.put(left, Direction.left);
-        gp.movePlan.put(down, Direction.down);
+        gp.movePlan.put(left1, Turn.LEFT);
+        gp.movePlan.put(left2, Turn.LEFT);
+        gp.movePlan.put(left3, Turn.LEFT);;
 
         SimpleOutcome so = Simulator.checkMovePath(gs, gp, 0);
 
@@ -55,13 +45,13 @@ public class SimulatorTest {
         Assert.assertEquals(expectedFinishOnMyTerrCellTick, so.finishOnMyTerrCellTick);
     }
 
-    void testCrossTraceAt(int up, int left, int down, int expectedCrossTick) {
+    void testCrossTraceAt(int left1, int left2, int left3, int expectedCrossTick) {
         GameState gs = standardGameState();
 
         GamePlan gp = new GamePlan();
-        gp.movePlan.put(up, Direction.up);
-        gp.movePlan.put(left, Direction.left);
-        gp.movePlan.put(down, Direction.down);
+        gp.movePlan.put(left1, Turn.LEFT);
+        gp.movePlan.put(left2, Turn.LEFT);
+        gp.movePlan.put(left3, Turn.LEFT);
 
         SimpleOutcome so = Simulator.checkMovePath(gs, gp, 0);
 
@@ -70,13 +60,13 @@ public class SimulatorTest {
     }
 
 
-    void testReachWallAt(int up, int left, int down, int expectedBorderTick) {
+    void testReachWallAt(int left1, int left2, int left3, int expectedBorderTick) {
         GameState gs = standardGameState();
 
         GamePlan gp = new GamePlan();
-        gp.movePlan.put(up, Direction.up);
-        gp.movePlan.put(left, Direction.left);
-        gp.movePlan.put(down, Direction.down);
+        gp.movePlan.put(left1, Turn.LEFT);
+        gp.movePlan.put(left2, Turn.LEFT);
+        gp.movePlan.put(left3, Turn.LEFT);
 
         SimpleOutcome so = Simulator.checkMovePath(gs, gp, 0);
 

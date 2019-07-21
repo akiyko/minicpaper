@@ -1,6 +1,7 @@
 package minic;
 
 import minic.dto.Direction;
+import minic.dto.Turn;
 
 import java.util.Optional;
 
@@ -12,8 +13,8 @@ public class Simulator {
         SimpleOutcome outcome = new SimpleOutcome();
 
         Position playerPos = gs.findPlayer(playerNum).orElse(null);
-        if(playerPos == null) {
-            outcome.completeCellTick=0;
+        if (playerPos == null) {
+            outcome.completeCellTick = 0;
             outcome.valid = false;
             return outcome;
         }
@@ -22,17 +23,10 @@ public class Simulator {
         while (outcome.completeCellTick < 0) {
             cellTick++;
 
-            Direction turnedDirection = gamePlan.movePlan.get(cellTick);
-            if (turnedDirection != null) {
-                if (playerDirection == turnedDirection) {
-                    //useless move
-                    outcome.valid = false;
-                    outcome.completeCellTick = cellTick;
-                    return outcome;
-                } else {
-                    playerDirection = turnedDirection;
-                }
+            Turn turn = gamePlan.movePlan.get(cellTick);
 
+            if (turn != null) {
+                playerDirection = playerDirection.turn(turn);
             }
 
             advance1CellTick(gs, playerDirection, outcome, cellTick, playerNum);
@@ -57,19 +51,19 @@ public class Simulator {
             } else {
                 gs.updateCell(simpleOutcome.lastPlayerPosition, c -> {
                     c.playernum = -1;
-                    if(c.terrPlayerNum != playernum) {
+                    if (c.terrPlayerNum != playernum) {
                         c.tracePlayerNum = playernum;
                     }
                     c.playerDirection = null;
                 });
                 gs.updateCell(nextCell, c -> {
                     c.playernum = playernum;
-                    if(c.terrPlayerNum != playernum) {
+                    if (c.terrPlayerNum != playernum) {
                         c.tracePlayerNum = playernum;
                     }
                     c.playerDirection = direction;
                 });
-                if(gs.at(simpleOutcome.lastPlayerPosition).terrPlayerNum != playernum
+                if (gs.at(simpleOutcome.lastPlayerPosition).terrPlayerNum != playernum
                         && gs.at(nextCell).terrPlayerNum == playernum && simpleOutcome.finishOnMyTerrCellTick == -1) {
                     simpleOutcome.finishOnMyTerrCellTick = cellTick;
                 }
