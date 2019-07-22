@@ -1,7 +1,9 @@
 package minic;
 
 import minic.dto.*;
+import minic.simulate.Speed;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -10,7 +12,7 @@ public class GameState {
     public Cell[][] cells;
     public ConfigDto configDto;
 
-    public static GameState fromTick(TickDto tickDto, ConfigDto configDto) {
+    public static GameState emptyField(ConfigDto configDto) {
         GameState gameState = new GameState();
         gameState.cells = new Cell[configDto.params.x_cells_count][];
         gameState.configDto = configDto;
@@ -24,6 +26,36 @@ public class GameState {
                 gameState.cells[i][j] = Cell.empty();
             }
         }
+
+        return gameState;
+    }
+
+    public GameState withPlayer(ConfigDto configDto,
+                                int playerNum,
+                                Position[] territory,
+                                Position[] trace,
+                                Position playerPosition,
+                                Direction playerDirection) {
+        for (Position t : territory) {
+            updateCell(t, c -> {
+                c.terrPlayerNum = playerNum;
+            });
+        }
+        for (Position t : trace) {
+            updateCell(t, c -> {
+                c.tracePlayerNum = playerNum;
+            });
+        }
+        updateCell(playerPosition, c -> {
+            c.playerDirection = playerDirection;
+            c.playernum = playerNum;
+        });
+
+        return this;
+    }
+
+    public static GameState fromTick(TickDto tickDto, ConfigDto configDto) {
+        GameState gameState = emptyField(configDto);
 
         addPlayers(tickDto, gameState);
         addBonuses(tickDto, gameState);
@@ -82,7 +114,7 @@ public class GameState {
         for (int i = 0; i < cells.length; i++) {
             for (int j = 0; j < cells[i].length; j++) {
                 if (cells[i][j].playernum == playerNum) {
-                    return Optional.of(Position.of(i,j));
+                    return Optional.of(Position.of(i, j));
                 }
             }
         }
