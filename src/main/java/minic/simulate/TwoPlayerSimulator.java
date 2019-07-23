@@ -6,10 +6,12 @@ import minic.dto.Direction;
 import minic.dto.Turn;
 
 public class TwoPlayerSimulator {
+    //TODO: shift - who will be first in equal situation?
+
     //simplify the game assuming that both players exactly start on a cell
     //however use speed bonus properly
     //precondition: both players are alive
-    public TwoPlayersOutcome simulate(GameState initial,
+    public static TwoPlayersOutcome simulate(GameState initial,
                                       int firstPlayerNum,
                                       int secondPlayerNum,
                                       Speed firstPlayerSpeed,
@@ -32,6 +34,9 @@ public class TwoPlayerSimulator {
 
         int firstCellTick = 0;
         int secondCellTick = 0;
+
+        Position firstPrevPosition = firstSimpleOutcome.lastPlayerPosition;
+        Position secondPrevPosition = secondSimpleOutcome.lastPlayerPosition;
         while(!outcome.complete) {
             microTick ++;
             if(microTick % firstEveryMt == 0) {
@@ -66,15 +71,18 @@ public class TwoPlayerSimulator {
                 outcome.secondCrossTraceOfFirstMicroTick = microTick;
             }
 
-            if(firstPos == secondPos) {
+            if(firstPos.equals(secondPos) || firstPos.equals(secondPrevPosition) || secondPos.equals(firstPrevPosition)) {
                 outcome.collisionMicroTick = microTick;
             }
+
+            firstPrevPosition = firstPos;
+            secondPrevPosition = secondPos;
         }
 
         return outcome;
     }
 
-    public Direction playerDirection(GameState gs, SimpleOutcome outcome, int playerNum) {
+    public static Direction playerDirection(GameState gs, SimpleOutcome outcome, int playerNum) {
         Position playerPos = gs.findPlayer(playerNum).orElse(null);
         if(playerPos == null) {
             throw  new IllegalStateException("no player " + playerNum);
