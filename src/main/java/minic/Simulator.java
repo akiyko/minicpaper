@@ -43,7 +43,7 @@ public class Simulator {
             return; //termination operation
         } else {
             Position nextCell = nextCellOpt.get();
-            if (gs.at(nextCell).tracePlayerNum == playernum) {
+            if (gs.at(nextCell).tracePlayerNum == playernum) {//cross my trace
                 simpleOutcome.crossMyTraceCellTick = cellTick;
                 simpleOutcome.completeCellTick = cellTick;
                 simpleOutcome.valid = false;
@@ -58,9 +58,9 @@ public class Simulator {
                 });
                 gs.updateCell(nextCell, c -> {
                     c.playernum = playernum;
-                    if (c.terrPlayerNum != playernum) {
-                        c.tracePlayerNum = playernum;
-                    }
+//                    if (c.terrPlayerNum != playernum) {//MISTAKE (with the voice of lord Jaraxus)
+//                        c.tracePlayerNum = playernum;
+//                    }
                     c.playerDirection = direction;
                 });
                 if (gs.at(simpleOutcome.lastPlayerPosition).terrPlayerNum != playernum

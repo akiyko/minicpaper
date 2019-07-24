@@ -37,10 +37,14 @@ public class TwoPlayerSimulator {
 
         Position firstPrevPosition = firstSimpleOutcome.lastPlayerPosition;
         Position secondPrevPosition = secondSimpleOutcome.lastPlayerPosition;
+
         while(!outcome.complete) {
+            boolean firstMoveThisTick = false;
+            boolean secondMoveThisTick = false;
             microTick ++;
             if(microTick % firstEveryMt == 0) {
                 firstCellTick ++;
+                firstMoveThisTick = true;
                 //calculate first do 1 cellTick
                 Turn turn = firstPlayerPlan.movePlan.get(firstCellTick);
 
@@ -51,6 +55,7 @@ public class TwoPlayerSimulator {
             }
             if(microTick % secondEveryMt == 0) {
                 secondCellTick ++;
+                secondMoveThisTick = true;
                 //calculate second do 1 cellTick
                 Turn turn = secondPlayerPlan.movePlan.get(secondCellTick);
 
@@ -61,11 +66,12 @@ public class TwoPlayerSimulator {
             }
 
             Position firstPos = firstSimpleOutcome.lastPlayerPosition;
+            Position secondPos = secondSimpleOutcome.lastPlayerPosition;
+
             if(gs.at(firstPos).tracePlayerNum == secondPlayerNum) {
                 outcome.complete = true;
                 outcome.firstCrossTraceOfSecondMicroTick = microTick;
             }
-            Position secondPos = secondSimpleOutcome.lastPlayerPosition;
             if(gs.at(secondPos).tracePlayerNum == firstPlayerNum) {
                 outcome.complete = true;
                 outcome.secondCrossTraceOfFirstMicroTick = microTick;

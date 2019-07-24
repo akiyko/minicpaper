@@ -76,7 +76,7 @@ public class TwoPlayerSimulatorTest {
                 fgp, sgp, configDto);
 
 
-        assertTrue(tpo.firstCrossTraceOfSecondMicroTick > 0);
+        assertEquals((30 / 5) *3, tpo.firstCrossTraceOfSecondMicroTick);
         assertTrue(tpo.secondCrossTraceOfFirstMicroTick < 0);
 
     }
