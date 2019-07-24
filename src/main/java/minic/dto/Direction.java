@@ -9,6 +9,8 @@ public enum Direction {
                     return up;
                 case LEFT:
                     return down;
+                case NONE:
+                    return left;
             }
             throw new IllegalStateException();
         }
@@ -21,6 +23,8 @@ public enum Direction {
                     return down;
                 case LEFT:
                     return up;
+                case NONE:
+                    return right;
             }
             throw new IllegalStateException();
         }
@@ -33,6 +37,8 @@ public enum Direction {
                     return right;
                 case LEFT:
                     return left;
+                case NONE:
+                    return up;
             }
             throw new IllegalStateException();
         }
@@ -45,6 +51,8 @@ public enum Direction {
                     return left;
                 case LEFT:
                     return right;
+                case NONE:
+                    return down;
             }
             throw new IllegalStateException();
         }

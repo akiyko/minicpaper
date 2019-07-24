@@ -5,9 +5,78 @@ import minic.dto.ConfigDto;
 import minic.dto.Direction;
 import minic.dto.Turn;
 
-public class TwoPlayerSimulator {
-    //TODO: shift - who will be first in equal situation?
+import java.util.*;
 
+public class TwoPlayerSimulator {
+    public Optional<DuelDecision> findWinningDuelTurn(GameState initial,
+                                                      int firstPlayerNum, int secondPlayerNum,
+                                                      Speed firstPlayerSpeed,
+                                                      Speed secondPlayerSpeed,
+                                                      List<GamePlan> firstPlayerPlans,
+                                                      List<GamePlan> secondPlayerPlans,
+                                                      ConfigDto configDto) {
+        TwoPlayersOutcome[][]outcomes = new TwoPlayersOutcome[firstPlayerPlans.size()][];
+        for (int i = 0; i < outcomes.length; i++) {
+            outcomes[i] = new TwoPlayersOutcome[secondPlayerPlans.size()];
+        }
+
+        for (int i = 0; i < firstPlayerPlans.size(); i++) {
+            for (int j = 0; j < secondPlayerPlans.size(); j++) {
+                outcomes[i][j] = simulate(initial, firstPlayerNum, secondPlayerNum,
+                        firstPlayerSpeed, secondPlayerSpeed,
+                        firstPlayerPlans.get(i), secondPlayerPlans.get(j), configDto);
+            }
+        }
+
+        //winning turn = there is W MovePlan for each second player MovePlan
+        Map<Turn, Set<Integer>> firstPlayerTurns = GamePlan.groupByFirstMoveIndices(firstPlayerPlans);
+
+        Turn bestWinningTurn = null;
+        TwoPlayersOutcome bestWinningTurnWorstOutcome = null;
+        Turn bestNotLoosingTurn = null;
+        for (Turn firstTurn : Turn.values()) {
+            //look for second player move that don't have winning responses
+            TwoPlayersOutcome worst = null;
+            for (int j = 0; j < secondPlayerPlans.size(); j++) {
+                TwoPlayersOutcome best = null;
+                for (Integer i : firstPlayerTurns.get(firstTurn)) {
+                    if(best == null) {
+                        best = outcomes[i][j];
+                    } else {
+                        best = best.compareTo(outcomes[i][j]) < 0
+                                ? best : outcomes[i][j];
+                    }
+                }
+                if(worst == null) {
+                    worst = best;
+                } else {
+                    worst = worst.compareTo(best) > 0
+                            ? worst : best;
+                }
+            }
+            //if worst is still winning then return it
+
+            if(worst.firstWinsMicroTick > 0) {
+                if(bestWinningTurn == null || worst.compareTo(bestWinningTurnWorstOutcome) < 0) {
+                    bestWinningTurn = firstTurn;
+                    bestWinningTurnWorstOutcome = worst;
+                }
+            }
+        }
+        if(bestWinningTurn != null && bestWinningTurnWorstOutcome != null) {
+            DuelDecision dd = new DuelDecision();
+            dd.firstMove = bestWinningTurn;
+            dd.outcome = bestWinningTurnWorstOutcome;
+        }
+        //TODO: not loosing move
+
+        return Optional.empty(); //no guaranteed win
+    }
+
+
+
+    //TODO: shift - who will be first in equal situation?
+    //TODO: maybe use micro tick shift for second player?
     //simplify the game assuming that both players exactly start on a cell
     //however use speed bonus properly
     //precondition: both players are alive
@@ -19,6 +88,8 @@ public class TwoPlayerSimulator {
                                       GamePlan firstPlayerPlan,
                                       GamePlan secondPlayerPlan,
                                       ConfigDto configDto) {
+
+
         TwoPlayersOutcome outcome = new TwoPlayersOutcome();
         int microTick = 0;
         GameState gs = initial.clone();
@@ -64,7 +135,7 @@ public class TwoPlayerSimulator {
                 }
                 Simulator.advance1CellTick(gs, secondPlayerDirection, secondSimpleOutcome, secondCellTick, secondPlayerNum);
             }
-
+            //TODOL handle if one of players move is not valid!!!
             Position firstPos = firstSimpleOutcome.lastPlayerPosition;
             Position secondPos = secondSimpleOutcome.lastPlayerPosition;
 
@@ -79,11 +150,13 @@ public class TwoPlayerSimulator {
 
             if(firstPos.equals(secondPos) || firstPos.equals(secondPrevPosition) || secondPos.equals(firstPrevPosition)) {
                 outcome.collisionMicroTick = microTick;
+                //TODO: calculate the longest trace to determine the winner
             }
 
             firstPrevPosition = firstPos;
             secondPrevPosition = secondPos;
         }
+        outcome.calculateWinner();
 
         return outcome;
     }
