@@ -123,6 +123,7 @@ public class TwoPlayerSimulator {
                     firstPlayerDirection = firstPlayerDirection.turn(turn);
                 }
                 Simulator.advance1CellTick(gs, firstPlayerDirection, firstSimpleOutcome, firstCellTick, firstPlayerNum);
+
             }
             if(microTick % secondEveryMt == 0) {
                 secondCellTick ++;
@@ -177,6 +178,18 @@ public class TwoPlayerSimulator {
             }
             if(secondMoveThisTick) {
                 secondPrevPosition = secondPos;
+            }
+            if(firstSimpleOutcome.completeCellTick > 0) {
+                outcome.complete = true;
+                if(!firstSimpleOutcome.valid) {
+                    outcome.secondWinsMicroTick = microTick;
+                }
+            }
+            if(secondSimpleOutcome.completeCellTick > 0) {
+                outcome.complete = true;
+                if(!secondSimpleOutcome.valid) {
+                    outcome.firstWinsMicroTick = microTick;
+                }
             }
         }
         outcome.calculateWinner();
