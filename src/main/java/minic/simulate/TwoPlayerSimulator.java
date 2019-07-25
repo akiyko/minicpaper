@@ -8,7 +8,7 @@ import minic.dto.Turn;
 import java.util.*;
 
 public class TwoPlayerSimulator {
-    public Optional<DuelDecision> findWinningDuelTurn(GameState initial,
+    public static Optional<DuelDecision> findWinningDuelTurn(GameState initial,
                                                       int firstPlayerNum, int secondPlayerNum,
                                                       Speed firstPlayerSpeed,
                                                       Speed secondPlayerSpeed,
@@ -135,7 +135,10 @@ public class TwoPlayerSimulator {
                 }
                 Simulator.advance1CellTick(gs, secondPlayerDirection, secondSimpleOutcome, secondCellTick, secondPlayerNum);
             }
-            //TODOL handle if one of players move is not valid!!!
+            if(!firstMoveThisTick && !secondMoveThisTick ) {
+                continue;
+            }
+            //TODO: handle if one of players move is not valid!!!
             Position firstPos = firstSimpleOutcome.lastPlayerPosition;
             Position secondPos = secondSimpleOutcome.lastPlayerPosition;
 
@@ -150,11 +153,31 @@ public class TwoPlayerSimulator {
 
             if(firstPos.equals(secondPos) || firstPos.equals(secondPrevPosition) || secondPos.equals(firstPrevPosition)) {
                 outcome.collisionMicroTick = microTick;
-                //TODO: calculate the longest trace to determine the winner
+                int firstTraceLen = 0;
+                int secondTraceLen = 0;
+                for (int i = 0; i < gs.cells.length; i++) {
+                    for (int j = 0; j < gs.cells[i].length; j++) {
+                        if(gs.cells[i][j].tracePlayerNum == firstPlayerNum) {
+                            firstTraceLen++;
+                        } else if(gs.cells[i][j].tracePlayerNum == secondPlayerNum) {
+                            secondTraceLen++;
+                        }
+                    }
+                }
+                if(firstTraceLen < secondTraceLen) {
+                    outcome.firstWinsMicroTick = microTick;
+                } else if(firstTraceLen > secondTraceLen) {
+                    outcome.secondWinsMicroTick = microTick;
+                } else {
+                    outcome.drawMicroTick = microTick;
+                }
             }
-
-            firstPrevPosition = firstPos;
-            secondPrevPosition = secondPos;
+            if(firstMoveThisTick) {
+                firstPrevPosition = firstPos;
+            }
+            if(secondMoveThisTick) {
+                secondPrevPosition = secondPos;
+            }
         }
         outcome.calculateWinner();
 

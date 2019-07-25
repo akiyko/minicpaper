@@ -7,7 +7,11 @@ import minic.Position;
 import minic.dto.ConfigDto;
 import minic.dto.Direction;
 import minic.dto.Turn;
+import minic.strategy.GamePlanGenerator;
 import org.junit.Test;
+
+import java.util.List;
+import java.util.Optional;
 
 import static minic.Position.of;
 import static org.junit.Assert.*;
@@ -15,6 +19,33 @@ import static org.junit.Assert.*;
 
 public class TwoPlayerSimulatorTest {
     static ConfigDto configDto = JsonHelperTest.configDto;
+
+    @Test
+    public void simulateFindBestMove() throws Exception {
+        GameState gs = GameState.emptyField(configDto);
+
+        gs.withPlayer(configDto, 0,
+                new Position[]{of(2,13)},
+                new Position[]{of(2,12), of(2,11)},
+                of(2,10),
+                Direction.down);
+        gs.withPlayer(configDto, 1,
+                new Position[]{of(4,2), of(4,3)},
+                new Position[]{of(4,7), of(4,6), of(4,5), of(4,4), of(4,3)},
+                of(4,8),
+                Direction.up);
+        List<GamePlan> fgps = GamePlanGenerator.allMovePlansOf(2, 5);
+        List<GamePlan> sgps = GamePlanGenerator.allMovePlansOf(2, 5);
+
+        Optional<DuelDecision> dd = TwoPlayerSimulator.findWinningDuelTurn(gs, 0, 1,
+                Speed.defaultNormalSpeed(configDto),
+                Speed.defaultNormalSpeed(configDto),
+                fgps, sgps, configDto);
+
+        assertTrue(dd.isPresent());
+
+        assertTrue(dd.get().firstMove != Turn.LEFT); //right or down are equals
+    }
 
     @Test
     public void simulateCollision() throws Exception {
@@ -45,6 +76,40 @@ public class TwoPlayerSimulatorTest {
 
 
         assertTrue(tpo.collisionMicroTick > 0);
+        assertEquals(12, tpo.firstWinsMicroTick);
+
+    }
+
+    @Test
+    public void simulateCollision2() throws Exception {
+        GameState gs = GameState.emptyField(configDto);
+
+        gs.withPlayer(configDto, 0,
+                new Position[]{of(3,4), of(3,5)},
+                new Position[]{of(3,6), of(3,7)},
+                of(3,8),
+                Direction.up);
+        gs.withPlayer(configDto, 1,
+                new Position[]{of(8,4)},
+                new Position[]{of(7,4), of(7,5), of(7,6), of(7,7)},
+                of(7,8),
+                Direction.up);
+
+
+        GamePlan fgp = new GamePlan();
+        fgp.movePlan.put(1, Turn.RIGHT);
+
+        GamePlan sgp = new GamePlan();
+        sgp.movePlan.put(1, Turn.LEFT);
+
+        TwoPlayersOutcome tpo = TwoPlayerSimulator.simulate(gs, 0, 1,
+                Speed.defaultNormalSpeed(configDto),
+                Speed.defaultNormalSpeed(configDto),
+                fgp, sgp, configDto);
+
+
+        assertTrue(tpo.collisionMicroTick > 0);
+        assertEquals(12, tpo.firstWinsMicroTick);
 
     }
 
