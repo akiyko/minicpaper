@@ -16,11 +16,15 @@ public class TwoPlayersOutcome implements Comparable<TwoPlayersOutcome> {
     public int drawMicroTick = -1;
 
     public void calculateWinner() {
-        if (firstCrossTraceOfSecondMicroTick > 0 && firstCrossTraceOfSecondMicroTick != secondCrossTraceOfFirstMicroTick) {
-            firstWinsMicroTick = firstCrossTraceOfSecondMicroTick;
+        if(firstWinsMicroTick < 0) {
+            if (firstCrossTraceOfSecondMicroTick > 0 && firstCrossTraceOfSecondMicroTick != secondCrossTraceOfFirstMicroTick) {
+                firstWinsMicroTick = firstCrossTraceOfSecondMicroTick;
+            }
         }
-        if (secondCrossTraceOfFirstMicroTick > 0 && secondCrossTraceOfFirstMicroTick != firstCrossTraceOfSecondMicroTick) {
-            secondWinsMicroTick = secondCrossTraceOfFirstMicroTick;
+        if(secondWinsMicroTick < 0) {
+            if (secondCrossTraceOfFirstMicroTick > 0 && secondCrossTraceOfFirstMicroTick != firstCrossTraceOfSecondMicroTick) {
+                secondWinsMicroTick = secondCrossTraceOfFirstMicroTick;
+            }
         }
         if (firstCrossTraceOfSecondMicroTick > 0 && firstCrossTraceOfSecondMicroTick == secondCrossTraceOfFirstMicroTick) {
             drawMicroTick = firstCrossTraceOfSecondMicroTick;

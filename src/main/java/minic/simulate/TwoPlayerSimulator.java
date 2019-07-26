@@ -9,13 +9,13 @@ import java.util.*;
 
 public class TwoPlayerSimulator {
     public static Optional<DuelDecision> findWinningDuelTurn(GameState initial,
-                                                      int firstPlayerNum, int secondPlayerNum,
-                                                      Speed firstPlayerSpeed,
-                                                      Speed secondPlayerSpeed,
-                                                      List<GamePlan> firstPlayerPlans,
-                                                      List<GamePlan> secondPlayerPlans,
-                                                      ConfigDto configDto) {
-        TwoPlayersOutcome[][]outcomes = new TwoPlayersOutcome[firstPlayerPlans.size()][];
+                                                             int firstPlayerNum, int secondPlayerNum,
+                                                             Speed firstPlayerSpeed,
+                                                             Speed secondPlayerSpeed,
+                                                             List<GamePlan> firstPlayerPlans,
+                                                             List<GamePlan> secondPlayerPlans,
+                                                             ConfigDto configDto) {
+        TwoPlayersOutcome[][] outcomes = new TwoPlayersOutcome[firstPlayerPlans.size()][];
         for (int i = 0; i < outcomes.length; i++) {
             outcomes[i] = new TwoPlayersOutcome[secondPlayerPlans.size()];
         }
@@ -35,19 +35,22 @@ public class TwoPlayerSimulator {
         TwoPlayersOutcome bestWinningTurnWorstOutcome = null;
         Turn bestNotLoosingTurn = null;
         for (Turn firstTurn : Turn.values()) {
+            if (!firstPlayerTurns.containsKey(firstTurn)) {
+                continue;
+            }
             //look for second player move that don't have winning responses
             TwoPlayersOutcome worst = null;
             for (int j = 0; j < secondPlayerPlans.size(); j++) {
                 TwoPlayersOutcome best = null;
                 for (Integer i : firstPlayerTurns.get(firstTurn)) {
-                    if(best == null) {
+                    if (best == null) {
                         best = outcomes[i][j];
                     } else {
                         best = best.compareTo(outcomes[i][j]) < 0
                                 ? best : outcomes[i][j];
                     }
                 }
-                if(worst == null) {
+                if (worst == null) {
                     worst = best;
                 } else {
                     worst = worst.compareTo(best) > 0
@@ -56,23 +59,24 @@ public class TwoPlayerSimulator {
             }
             //if worst is still winning then return it
 
-            if(worst.firstWinsMicroTick > 0) {
-                if(bestWinningTurn == null || worst.compareTo(bestWinningTurnWorstOutcome) < 0) {
+            if (worst.firstWinsMicroTick > 0) {
+                if (bestWinningTurn == null || worst.compareTo(bestWinningTurnWorstOutcome) < 0) {
                     bestWinningTurn = firstTurn;
                     bestWinningTurnWorstOutcome = worst;
                 }
             }
         }
-        if(bestWinningTurn != null && bestWinningTurnWorstOutcome != null) {
+        if (bestWinningTurn != null && bestWinningTurnWorstOutcome != null) {
             DuelDecision dd = new DuelDecision();
             dd.firstMove = bestWinningTurn;
             dd.outcome = bestWinningTurnWorstOutcome;
+
+            return Optional.of(dd);
         }
         //TODO: not loosing move
 
         return Optional.empty(); //no guaranteed win
     }
-
 
 
     //TODO: shift - who will be first in equal situation?
@@ -81,13 +85,13 @@ public class TwoPlayerSimulator {
     //however use speed bonus properly
     //precondition: both players are alive
     public static TwoPlayersOutcome simulate(GameState initial,
-                                      int firstPlayerNum,
-                                      int secondPlayerNum,
-                                      Speed firstPlayerSpeed,
-                                      Speed secondPlayerSpeed,
-                                      GamePlan firstPlayerPlan,
-                                      GamePlan secondPlayerPlan,
-                                      ConfigDto configDto) {
+                                             int firstPlayerNum,
+                                             int secondPlayerNum,
+                                             Speed firstPlayerSpeed,
+                                             Speed secondPlayerSpeed,
+                                             GamePlan firstPlayerPlan,
+                                             GamePlan secondPlayerPlan,
+                                             ConfigDto configDto) {
 
 
         TwoPlayersOutcome outcome = new TwoPlayersOutcome();
@@ -109,12 +113,12 @@ public class TwoPlayerSimulator {
         Position firstPrevPosition = firstSimpleOutcome.lastPlayerPosition;
         Position secondPrevPosition = secondSimpleOutcome.lastPlayerPosition;
 
-        while(!outcome.complete) {
+        while (!outcome.complete) {
             boolean firstMoveThisTick = false;
             boolean secondMoveThisTick = false;
-            microTick ++;
-            if(microTick % firstEveryMt == 0) {
-                firstCellTick ++;
+            microTick++;
+            if (microTick % firstEveryMt == 0) {
+                firstCellTick++;
                 firstMoveThisTick = true;
                 //calculate first do 1 cellTick
                 Turn turn = firstPlayerPlan.movePlan.get(firstCellTick);
@@ -125,8 +129,8 @@ public class TwoPlayerSimulator {
                 Simulator.advance1CellTick(gs, firstPlayerDirection, firstSimpleOutcome, firstCellTick, firstPlayerNum);
 
             }
-            if(microTick % secondEveryMt == 0) {
-                secondCellTick ++;
+            if (microTick % secondEveryMt == 0) {
+                secondCellTick++;
                 secondMoveThisTick = true;
                 //calculate second do 1 cellTick
                 Turn turn = secondPlayerPlan.movePlan.get(secondCellTick);
@@ -136,58 +140,59 @@ public class TwoPlayerSimulator {
                 }
                 Simulator.advance1CellTick(gs, secondPlayerDirection, secondSimpleOutcome, secondCellTick, secondPlayerNum);
             }
-            if(!firstMoveThisTick && !secondMoveThisTick ) {
+            if (!firstMoveThisTick && !secondMoveThisTick) {
                 continue;
             }
             //TODO: handle if one of players move is not valid!!!
             Position firstPos = firstSimpleOutcome.lastPlayerPosition;
             Position secondPos = secondSimpleOutcome.lastPlayerPosition;
 
-            if(gs.at(firstPos).tracePlayerNum == secondPlayerNum) {
+            if (gs.at(firstPos).tracePlayerNum == secondPlayerNum) {
                 outcome.complete = true;
                 outcome.firstCrossTraceOfSecondMicroTick = microTick;
             }
-            if(gs.at(secondPos).tracePlayerNum == firstPlayerNum) {
+            if (gs.at(secondPos).tracePlayerNum == firstPlayerNum) {
                 outcome.complete = true;
                 outcome.secondCrossTraceOfFirstMicroTick = microTick;
             }
 
-            if(firstPos.equals(secondPos) || firstPos.equals(secondPrevPosition) || secondPos.equals(firstPrevPosition)) {
+            if (firstPos.equals(secondPos) || firstPos.equals(secondPrevPosition) || secondPos.equals(firstPrevPosition)) {
                 outcome.collisionMicroTick = microTick;
+                outcome.complete = true;
                 int firstTraceLen = 0;
                 int secondTraceLen = 0;
                 for (int i = 0; i < gs.cells.length; i++) {
                     for (int j = 0; j < gs.cells[i].length; j++) {
-                        if(gs.cells[i][j].tracePlayerNum == firstPlayerNum) {
+                        if (gs.cells[i][j].tracePlayerNum == firstPlayerNum) {
                             firstTraceLen++;
-                        } else if(gs.cells[i][j].tracePlayerNum == secondPlayerNum) {
+                        } else if (gs.cells[i][j].tracePlayerNum == secondPlayerNum) {
                             secondTraceLen++;
                         }
                     }
                 }
-                if(firstTraceLen < secondTraceLen) {
+                if (firstTraceLen < secondTraceLen) {
                     outcome.firstWinsMicroTick = microTick;
-                } else if(firstTraceLen > secondTraceLen) {
+                } else if (firstTraceLen > secondTraceLen) {
                     outcome.secondWinsMicroTick = microTick;
                 } else {
                     outcome.drawMicroTick = microTick;
                 }
             }
-            if(firstMoveThisTick) {
+            if (firstMoveThisTick) {
                 firstPrevPosition = firstPos;
             }
-            if(secondMoveThisTick) {
+            if (secondMoveThisTick) {
                 secondPrevPosition = secondPos;
             }
-            if(firstSimpleOutcome.completeCellTick > 0) {
+            if (firstSimpleOutcome.completeCellTick > 0) {
                 outcome.complete = true;
-                if(!firstSimpleOutcome.valid) {
+                if (!firstSimpleOutcome.valid) {
                     outcome.secondWinsMicroTick = microTick;
                 }
             }
-            if(secondSimpleOutcome.completeCellTick > 0) {
+            if (secondSimpleOutcome.completeCellTick > 0) {
                 outcome.complete = true;
-                if(!secondSimpleOutcome.valid) {
+                if (!secondSimpleOutcome.valid) {
                     outcome.firstWinsMicroTick = microTick;
                 }
             }
@@ -199,8 +204,8 @@ public class TwoPlayerSimulator {
 
     public static Direction playerDirection(GameState gs, SimpleOutcome outcome, int playerNum) {
         Position playerPos = gs.findPlayer(playerNum).orElse(null);
-        if(playerPos == null) {
-            throw  new IllegalStateException("no player " + playerNum);
+        if (playerPos == null) {
+            throw new IllegalStateException("no player " + playerNum);
         }
         outcome.lastPlayerPosition = playerPos;
         return gs.at(playerPos).playerDirection;
