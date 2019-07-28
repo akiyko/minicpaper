@@ -19,6 +19,22 @@ public class JsonHelperTest {
         }
     }
 
+    public static GameState readGameState(String configFile, String tickFile) {
+        try(Reader r = readFile(configFile)) {
+            ConfigDto configDto = JsonHelper.readConfig(r);
+            try(Reader r2 = readFile(tickFile)) {
+                TickDto tickDto = JsonHelper.readTick(r2);
+
+                return GameState.fromTick(tickDto, configDto);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        throw new IllegalStateException(configFile + "/" + tickFile);
+    }
+
     @Test
     public void testReadConfig() {
         try(Reader r = readFile("configsample1.json")) {

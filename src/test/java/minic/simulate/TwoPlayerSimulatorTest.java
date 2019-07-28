@@ -8,6 +8,7 @@ import minic.dto.ConfigDto;
 import minic.dto.Direction;
 import minic.dto.Turn;
 import minic.strategy.GamePlanGenerator;
+import minic.strategy.ParametrizedGameStrategy;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -20,6 +21,23 @@ import static org.junit.Assert.*;
 
 public class TwoPlayerSimulatorTest {
     static ConfigDto configDto = JsonHelperTest.configDto;
+
+    @Test
+    public void testFirstWin162bug() {
+        GameState gs = JsonHelperTest.readGameState("configsample1.json", "tick-duel/win162bug.json");
+
+        List<GamePlan> fgps = GamePlanGenerator.allMovePlansOf(2, 5);
+        List<GamePlan> sgps = GamePlanGenerator.allMovePlansOf(2, 5);
+
+        Optional<DuelDecision> dd = TwoPlayerSimulator.findWinningDuelTurn(gs, 0, 3,
+                Speed.defaultNormalSpeed(configDto),
+                Speed.defaultNormalSpeed(configDto),
+                fgps, sgps, configDto);
+
+        System.out.println(dd.get());
+        assertFalse(dd.isPresent());
+
+    }
 
     @Test
     public void simulateFindBestMoveOpponentLeft() throws Exception {

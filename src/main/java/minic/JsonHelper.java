@@ -44,7 +44,7 @@ public class JsonHelper {
 
     public static Object readNextObject(BufferedReader r) throws IOException {
         String json = readNextJson(r);
-
+        System.err.println(json);
         if(json.contains("start_game")) {
             return readConfig(new StringReader(json));
         } else if(json.contains("tick")) {

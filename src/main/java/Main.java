@@ -32,6 +32,8 @@ public class Main {
 
                 System.out.printf("{\"command\": \"%s\"}\n", command);
 
+
+
             }
         }
     }
