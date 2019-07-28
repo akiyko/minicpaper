@@ -36,7 +36,7 @@ public class GamePlanGeneratorTest {
     public void tetAllpermutations() {
         List<List<Direction>> options = GamePlanGenerator.allPermutations(EnumSet.allOf(Direction.class));
 
-        assertEquals(24, options.size());
+        assertEquals(120, options.size());
 
         for (List<Direction> option : options) {
             System.out.println(option);

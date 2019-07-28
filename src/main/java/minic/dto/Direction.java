@@ -1,5 +1,10 @@
 package minic.dto;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 public enum Direction {
     left {
         @Override
@@ -56,6 +61,11 @@ public enum Direction {
             }
             throw new IllegalStateException();
         }
+    }, none {
+        @Override
+        public Direction turn(Turn turn) {
+            throw new IllegalStateException();
+        }
     };
 
 
@@ -65,4 +75,14 @@ public enum Direction {
     public Direction turn(Turn turn) {
         throw new UnsupportedOperationException();
     }
+
+
+    public static Direction randomNotNone() {
+        List<Direction> dirs = new ArrayList<>(Arrays.asList(Direction.values()));
+        dirs.remove(none);
+        Collections.shuffle(dirs);
+
+        return dirs.get(0);
+    }
+
 }

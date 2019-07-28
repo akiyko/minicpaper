@@ -11,6 +11,7 @@ import java.util.function.Consumer;
 public class GameState {
     public Cell[][] cells;
     public ConfigDto configDto;
+    public final Map<Integer, Position> playersInitialPos = new HashMap<>();
 
     public static GameState emptyField(ConfigDto configDto) {
         GameState gameState = new GameState();
@@ -51,6 +52,8 @@ public class GameState {
             c.playernum = playerNum;
         });
 
+        playersInitialPos.put(playerNum, playerPosition);
+
         return this;
     }
 
@@ -70,6 +73,10 @@ public class GameState {
             gameState.updateCell(playerDtoEntry.getValue().position, c -> {
                 c.playernum = playerNum;
                 c.playerDirection = playerDtoEntry.getValue().direction;
+                if(c.playerDirection == null || c.playerDirection == Direction.none) {
+                    c.playerDirection = Direction.randomNotNone();//now easier to do like this
+                }
+
                 c.realXy = playerDtoEntry.getValue().position;
             });
 
@@ -84,6 +91,8 @@ public class GameState {
                     c.tracePlayerNum = playerNum;
                 });
             }
+
+            gameState.playersInitialPos.put(playerNum, gameState.findPlayer(playerNum).get());
         }
     }
 

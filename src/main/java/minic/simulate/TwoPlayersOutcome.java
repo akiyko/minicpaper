@@ -56,4 +56,17 @@ public class TwoPlayersOutcome implements Comparable<TwoPlayersOutcome> {
 
         return 0;//no much difference
     }
+
+    @Override
+    public String toString() {
+        return "TwoPlayersOutcome{" +
+                "complete=" + complete +
+                ", firstCrossTraceOfSecondMicroTick=" + firstCrossTraceOfSecondMicroTick +
+                ", secondCrossTraceOfFirstMicroTick=" + secondCrossTraceOfFirstMicroTick +
+                ", collisionMicroTick=" + collisionMicroTick +
+                ", firstWinsMicroTick=" + firstWinsMicroTick +
+                ", secondWinsMicroTick=" + secondWinsMicroTick +
+                ", drawMicroTick=" + drawMicroTick +
+                '}';
+    }
 }

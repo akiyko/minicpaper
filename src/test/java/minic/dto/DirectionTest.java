@@ -13,7 +13,9 @@ public class DirectionTest {
         Arrays.stream(Direction.values())
                 .forEach(d -> {
                     for (Turn turn : Turn.values()) {
-                        System.out.println(d + ":" + turn + " = " + d.turn(turn));
+                        if (d != Direction.none) {
+                            System.out.println(d + ":" + turn + " = " + d.turn(turn));
+                        }
                     }
                 });
     }
