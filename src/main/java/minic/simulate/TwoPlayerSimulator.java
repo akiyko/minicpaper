@@ -33,7 +33,7 @@ public class TwoPlayerSimulator {
 
         Turn bestWinningTurn = null;
         TwoPlayersOutcome bestWinningTurnWorstOutcome = null;
-        Turn bestNotLoosingTurn = null;
+        Map<Turn, TwoPlayersOutcome> worstCases = new HashMap<>();
         for (Turn firstTurn : Turn.values()) {
             if (!firstPlayerTurns.containsKey(firstTurn)) {
                 continue;
@@ -68,6 +68,8 @@ public class TwoPlayerSimulator {
                     bestWinningTurnWorstOutcome = worst;
                 }
             }
+            worstCases.put(firstTurn, worst);
+
         }
         if (bestWinningTurn != null && bestWinningTurnWorstOutcome != null) {
             DuelDecision dd = new DuelDecision();
@@ -76,10 +78,36 @@ public class TwoPlayerSimulator {
 
             return Optional.of(dd);
         }
+
+        //best not losing turn
+        worstCases.entrySet().removeIf(e -> e.getValue().secondWinsMicroTick > 0);
+        if(worstCases.size() == 1 || worstCases.size() == 2) {//there is a turn leading to defeat
+            if(worstCases.size() == 1) {
+                DuelDecision dd = new DuelDecision();
+                dd.firstMove = worstCases.entrySet().iterator().next().getKey();
+                dd.outcome = worstCases.entrySet().iterator().next().getValue();
+
+                return Optional.of(dd);
+            } else if(worstCases.size() == 2) {
+
+                return worstCases.entrySet().stream()
+                        .min(Comparator.comparing(Map.Entry::getValue))
+                        .map(e -> {
+                    DuelDecision dd = new DuelDecision();
+                    dd.firstMove = e.getKey();
+                    dd.outcome = e.getValue();
+
+                    return dd;
+                });
+            }
+        }
+
         //TODO: not loosing move
 
         return Optional.empty(); //no guaranteed win
     }
+
+
 
 
     //TODO: shift - who will be first in equal situation?

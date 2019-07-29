@@ -23,6 +23,9 @@ public class Main {
 
         while (true) {
             Object nextTick = JsonHelper.readNextObject(r);
+            if(nextTick == null) {
+                break;
+            }
             if (nextTick instanceof TickDto) {
                 GameState gs = GameState.fromTick((TickDto) nextTick, configDto);
 

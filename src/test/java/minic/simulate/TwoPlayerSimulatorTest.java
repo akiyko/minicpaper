@@ -35,7 +35,9 @@ public class TwoPlayerSimulatorTest {
                 fgps, sgps, configDto);
 
         System.out.println(dd.orElse(null));
-        assertFalse(dd.isPresent());
+        assertTrue(dd.isPresent());
+        assertTrue(dd.get().outcome.firstWinsMicroTick < 0);
+        assertTrue(dd.get().outcome.secondWinsMicroTick < 0);
 
     }
 
@@ -87,6 +89,36 @@ public class TwoPlayerSimulatorTest {
 
         assertTrue(dd.get().firstMove != Turn.LEFT); //right or down are equals
     }
+
+    @Test
+    public void simulateFindNotLoosing() throws Exception {
+        GameState gs = GameState.emptyField(configDto);
+
+        gs.withPlayer(configDto, 0,
+                new Position[]{of(3,4)},
+                new Position[]{of(3, 5), of(3,6), of(3,7), of(3,8)},
+                of(4,8),
+                Direction.right);
+        gs.withPlayer(configDto, 1,
+                new Position[]{of(2,14)},
+                new Position[]{},
+                of(2,13),
+                Direction.down);
+        List<GamePlan> fgps = GamePlanGenerator.allMovePlansOf(2, 5);
+        List<GamePlan> sgps = GamePlanGenerator.allMovePlansOf(2, 5);
+
+        Optional<DuelDecision> dd = TwoPlayerSimulator.findWinningDuelTurn(gs, 0, 1,
+                Speed.defaultNormalSpeed(configDto),
+                Speed.defaultNormalSpeed(configDto),
+                fgps, sgps, configDto);
+
+        System.out.println(dd.orElse(null));
+        assertTrue(dd.isPresent());
+
+        assertTrue(dd.get().firstMove == Turn.RIGHT);
+        assertTrue(dd.get().outcome.secondWinsMicroTick < 0);
+    }
+
 
     @Test
     public void testPerf() throws Exception {
