@@ -23,6 +23,24 @@ public class TwoPlayerSimulatorTest {
     static ConfigDto configDto = JsonHelperTest.configDto;
 
     @Test
+    public void testFirstWin6bug1() {
+        GameState gs = JsonHelperTest.readGameState("configsample1.json", "tick-duel/win6bug1.json");
+
+        List<GamePlan> fgps = GamePlanGenerator.allMovePlansOf(2, 5);
+        List<GamePlan> sgps = GamePlanGenerator.allMovePlansOf(2, 5);
+
+        Optional<DuelDecision> dd = TwoPlayerSimulator.findWinningDuelTurn(gs, 0, 3,
+                Speed.defaultNormalSpeed(configDto),
+                Speed.defaultNormalSpeed(configDto),
+                fgps, sgps, configDto);
+
+        System.out.println(dd.orElse(null));
+        assertFalse(dd.isPresent());
+
+    }
+
+
+    @Test
     public void testFirstWin162bug() {
         GameState gs = JsonHelperTest.readGameState("configsample1.json", "tick-duel/win162bug.json");
 
@@ -34,7 +52,6 @@ public class TwoPlayerSimulatorTest {
                 Speed.defaultNormalSpeed(configDto),
                 fgps, sgps, configDto);
 
-        System.out.println(dd.get());
         assertFalse(dd.isPresent());
 
     }

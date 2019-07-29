@@ -1,8 +1,6 @@
 package minic.simulate;
 
 
-import java.util.Comparator;
-
 public class TwoPlayersOutcome implements Comparable<TwoPlayersOutcome> {
     public boolean complete = false;
     public int firstCrossTraceOfSecondMicroTick = -1;
@@ -16,18 +14,30 @@ public class TwoPlayersOutcome implements Comparable<TwoPlayersOutcome> {
     public int drawMicroTick = -1;
 
     public void calculateWinner() {
-        if(firstWinsMicroTick < 0) {
-            if (firstCrossTraceOfSecondMicroTick > 0 && firstCrossTraceOfSecondMicroTick != secondCrossTraceOfFirstMicroTick) {
-                firstWinsMicroTick = firstCrossTraceOfSecondMicroTick;
+        if(collisionMicroTick < 0) {
+            if (firstWinsMicroTick < 0) {
+                if (firstCrossTraceOfSecondMicroTick > 0 && firstCrossTraceOfSecondMicroTick != secondCrossTraceOfFirstMicroTick) {
+                    firstWinsMicroTick = firstCrossTraceOfSecondMicroTick;
+                }
+            }
+            if (secondWinsMicroTick < 0) {
+                if (secondCrossTraceOfFirstMicroTick > 0 && secondCrossTraceOfFirstMicroTick != firstCrossTraceOfSecondMicroTick) {
+                    secondWinsMicroTick = secondCrossTraceOfFirstMicroTick;
+                }
             }
         }
-        if(secondWinsMicroTick < 0) {
-            if (secondCrossTraceOfFirstMicroTick > 0 && secondCrossTraceOfFirstMicroTick != firstCrossTraceOfSecondMicroTick) {
-                secondWinsMicroTick = secondCrossTraceOfFirstMicroTick;
-            }
+        if(firstWinsMicroTick > 0 && firstWinsMicroTick == secondWinsMicroTick) {
+            drawMicroTick = firstWinsMicroTick;
+            firstWinsMicroTick = -1;
+            secondWinsMicroTick = -1;
         }
-        if (firstCrossTraceOfSecondMicroTick > 0 && firstCrossTraceOfSecondMicroTick == secondCrossTraceOfFirstMicroTick) {
+
+        if (collisionMicroTick < 0
+                && firstCrossTraceOfSecondMicroTick > 0
+                && firstCrossTraceOfSecondMicroTick == secondCrossTraceOfFirstMicroTick) {
             drawMicroTick = firstCrossTraceOfSecondMicroTick;
+            firstWinsMicroTick = -1;
+            secondWinsMicroTick = -1;
         }
     }
 
@@ -38,20 +48,32 @@ public class TwoPlayersOutcome implements Comparable<TwoPlayersOutcome> {
     @Override
     public int compareTo(TwoPlayersOutcome o) {
         //both is win then return the fastest
+
         if (firstWinsMicroTick > 0 && o.firstWinsMicroTick > 0) {
             return Integer.compare(firstWinsMicroTick, o.firstWinsMicroTick);
+        }
+        if (secondWinsMicroTick > 0 && o.secondWinsMicroTick > 0) {
+            return Integer.compare(o.secondWinsMicroTick, secondWinsMicroTick);
         }
         //only left is winning
         if (firstWinsMicroTick > 0 && o.firstWinsMicroTick < 0) {
             return -1;
         }
+        //only right is winning
+        if (firstWinsMicroTick < 0 && o.firstWinsMicroTick > 0) {
+            return 1;
+        }
         //right is loose, left is not
         if (secondWinsMicroTick < 0 && o.secondWinsMicroTick > 0) {
             return -1;
         }
+        //right is loose, left is not
+        if (secondWinsMicroTick > 0 && o.secondWinsMicroTick < 0) {
+            return 1;
+        }
         //left is loose, right is not
         if(secondWinsMicroTick < 0 && o.secondWinsMicroTick < 0) {
-            return 1;
+            return 0;
         }
 
         return 0;//no much difference

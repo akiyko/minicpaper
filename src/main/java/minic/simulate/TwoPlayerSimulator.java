@@ -53,6 +53,9 @@ public class TwoPlayerSimulator {
                 if (worst == null) {
                     worst = best;
                 } else {
+//                    if(worst.compareTo(best) > 0 && best.compareTo(worst) > 0) {
+//                        throw new IllegalStateException();
+//                    }
                     worst = worst.compareTo(best) > 0
                             ? worst : best;
                 }
@@ -81,6 +84,8 @@ public class TwoPlayerSimulator {
 
     //TODO: shift - who will be first in equal situation?
     //TODO: maybe use micro tick shift for second player?
+    //TODO: short moves, finish on terr close
+    //TODO:
     //simplify the game assuming that both players exactly start on a cell
     //however use speed bonus properly
     //precondition: both players are alive
