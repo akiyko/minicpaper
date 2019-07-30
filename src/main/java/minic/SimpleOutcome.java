@@ -16,4 +16,10 @@ public class SimpleOutcome {
     public int territoryConsumed = -1;
 
     public Position lastPlayerPosition = null;
+
+    public int nitroBonusCellTick = -1;
+    public int slowBonusCellTick = -1;
+    public int sawBonusCellTick = -1;
+    public int cellsTaken = -1;
+    public int enemyCellsTaken = -1;
 }

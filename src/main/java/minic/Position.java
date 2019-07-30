@@ -2,8 +2,12 @@ package minic;
 
 import minic.dto.Direction;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Position {
     public final int i;
@@ -49,6 +53,12 @@ public class Position {
         return Optional.empty();
     }
 
+    public List<Position> neighboors() {
+        return Stream.of(advance(Direction.up), advance(Direction.down), advance(Direction.left), advance(Direction.right))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
+    }
 //    public static minic.Position of(int i, int j) {
 //        return new minic.Position(i, j);
 //    }

@@ -62,6 +62,7 @@ public class Simulator {
 //                        c.tracePlayerNum = playernum;
 //                    }
                     c.playerDirection = direction;
+                    takeBonuses(gs, gs.at(nextCell), simpleOutcome, cellTick);
                 });
                 if (gs.at(simpleOutcome.lastPlayerPosition).terrPlayerNum != playernum
                         && gs.at(nextCell).terrPlayerNum == playernum && simpleOutcome.finishOnMyTerrCellTick == -1) {
@@ -72,4 +73,36 @@ public class Simulator {
             }
         }
     }
+
+    public static void takeBonuses(GameState gs, Cell nextCell, SimpleOutcome simpleOutcome, int cellTick) {
+        if(nextCell.bonus != null) {
+            switch (nextCell.bonus) {
+                case n:
+                    if(simpleOutcome.nitroBonusCellTick == -1) {
+                        simpleOutcome.nitroBonusCellTick = cellTick;
+                    }
+                    break;
+                case s:
+                    if(simpleOutcome.slowBonusCellTick == -1) {
+                        simpleOutcome.slowBonusCellTick = cellTick;
+                    }
+                    break;
+                case saw:
+                    if(simpleOutcome.sawBonusCellTick == -1) {
+                        simpleOutcome.sawBonusCellTick = cellTick;
+                    }
+                    break;
+            }
+        }
+    }
+
+//    public static void fillClosedPath(GameState gs, Position nextCell, SimpleOutcome simpleOutcome, int cellTick, int playernum) {
+//
+//    }
+//
+//    public static boolean tryFillStartingFrom(GameState gs, Position nextCell, SimpleOutcome simpleOutcome, int cellTick, int playernum) {
+//
+//    }
+
+
 }

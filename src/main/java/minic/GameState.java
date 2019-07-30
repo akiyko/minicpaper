@@ -1,11 +1,10 @@
 package minic;
 
 import minic.dto.*;
-import minic.simulate.Speed;
+import minic.simulate.FillResult;
+import minic.simulate.FollowTraceResult;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Consumer;
 
 public class GameState {
@@ -132,6 +131,72 @@ public class GameState {
 
     public Optional<Direction> playerDirection(int playerNum) {
         return findPlayer(playerNum).map(pos -> at(pos).playerDirection);
+    }
+
+    public FillResult fillStartFrom(Position startPosition, int playerNum) {
+        FillResult fillResult = new FillResult();
+
+        Set<Position> thisIterationFilledPositions = new HashSet<>();
+        thisIterationFilledPositions.add(startPosition);
+        List<Position> nextIterationFilledCells = new ArrayList<>();
+        while (fillResult.enclosed && !thisIterationFilledPositions.isEmpty()) {
+            for (Position tracePosition : thisIterationFilledPositions) {
+                List<Position> neighborCells = tracePosition.neighboors();
+                if(neighborCells.size() < 4) {
+                    fillResult.enclosed = false;
+                    break;
+                }
+                for (Position neighboorPosition : neighborCells) {
+                    if (!fillResult.filledPositions.contains(neighboorPosition)) {
+                        if (at(neighboorPosition).terrPlayerNum != playerNum
+                                && at(neighboorPosition).tracePlayerNum != playerNum) {
+                            nextIterationFilledCells.add(neighboorPosition);
+                        }
+                    }
+                }
+
+            }
+            fillResult.filledPositions.addAll(thisIterationFilledPositions);
+            thisIterationFilledPositions.clear();
+            thisIterationFilledPositions.addAll(nextIterationFilledCells);
+            nextIterationFilledCells.clear();
+        }
+
+        return fillResult;
+    }
+
+    public FollowTraceResult followTraceStartingFrom(Position lastTracePoint, int playerNum) {
+        FollowTraceResult ftr = new FollowTraceResult();
+
+        //check correct position passed
+        if (at(lastTracePoint).tracePlayerNum != playerNum) {
+            return ftr;
+        }
+
+        Set<Position> thisIterationTracePositions = new HashSet<>();
+        thisIterationTracePositions.add(lastTracePoint);
+        List<Position> nextIterationTraceCells = new ArrayList<>();
+        while (!thisIterationTracePositions.isEmpty()) {
+            for (Position tracePosition : thisIterationTracePositions) {
+                for (Position neighboorPosition : tracePosition.neighboors()) {
+                    if (!ftr.traceCells.contains(neighboorPosition)) {
+                        if (at(neighboorPosition).tracePlayerNum == playerNum) {//trace
+                            nextIterationTraceCells.add(neighboorPosition);
+                        } else if (at(neighboorPosition).terrPlayerNum != playerNum //cell candidate to fill
+                                && at(neighboorPosition).playernum != playerNum) {
+                            ftr.neighborNonTerritoryCells.add(neighboorPosition);
+                        }
+                    }
+                }
+
+            }
+            ftr.traceCells.addAll(thisIterationTracePositions);
+            thisIterationTracePositions.clear();
+            thisIterationTracePositions.addAll(nextIterationTraceCells);
+            nextIterationTraceCells.clear();
+        }
+
+        return ftr;
     }
 
     @Override
