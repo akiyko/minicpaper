@@ -133,6 +133,26 @@ public class GameState {
         return findPlayer(playerNum).map(pos -> at(pos).playerDirection);
     }
 
+    public Set<Position> findEnclosed(Position beforeClose, int playerNum) {
+        FollowTraceResult ftr = followTraceStartingFrom(beforeClose, playerNum);
+        Set<Position> enclosed = new HashSet<>();
+
+        if(!ftr.traceCells.isEmpty()) {
+            enclosed.addAll(ftr.traceCells);//trace will be always ours
+            Set<Position> notCovered = new HashSet<>(ftr.neighborNonTerritoryCells);
+            while(!notCovered.isEmpty()) {
+                FillResult fr = fillStartFrom(notCovered.iterator().next(), playerNum);
+                if(fr.enclosed) {
+                    enclosed.addAll(fr.filledPositions);
+                }
+                notCovered.removeAll(fr.filledPositions);
+            }
+        }
+
+        return enclosed;
+    }
+
+
     public FillResult fillStartFrom(Position startPosition, int playerNum) {
         FillResult fillResult = new FillResult();
 

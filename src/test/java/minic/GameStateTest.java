@@ -5,12 +5,31 @@ import minic.simulate.FillResult;
 import minic.simulate.FollowTraceResult;
 import org.junit.Test;
 
+import java.util.Set;
+
 import static minic.JsonHelperTest.configDto;
 import static minic.Position.of;
 import static org.junit.Assert.*;
 
 
 public class GameStateTest {
+    @Test
+    public void fillTest1() throws Exception {
+        GameState gs = GameState.emptyField(configDto);
+
+        gs.withPlayer(configDto, 0,
+                new Position[]{of(2, 2)},
+                new Position[]{of(3, 2), of(4, 2), of(5, 2), of(5, 3), of(5, 4),
+                        of(2, 4), of(3, 4), of(4, 4), of(5, 4),
+                        of(2,3)},
+                of(2, 2),
+                Direction.down);
+        Set<Position> enclosed = gs.findEnclosed(of(2,3), 0);
+
+        assertFalse(enclosed.isEmpty());
+        assertEquals(11, enclosed.size());
+    }
+
     @Test
     public void followTraceStartingFrom() throws Exception {
         GameState gs = GameState.emptyField(configDto);

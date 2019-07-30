@@ -2,8 +2,12 @@ package minic;
 
 import minic.dto.Direction;
 import minic.dto.Turn;
+import minic.simulate.FillResult;
+import minic.simulate.FollowTraceResult;
 
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 public class Simulator {
     public static SimpleOutcome checkMovePath(GameState initial, GamePlan gamePlan, int playerNum) {
@@ -68,11 +72,13 @@ public class Simulator {
                         && gs.at(nextCell).terrPlayerNum == playernum && simpleOutcome.finishOnMyTerrCellTick == -1) {
                     simpleOutcome.finishOnMyTerrCellTick = cellTick;
                     simpleOutcome.completeCellTick = cellTick;
+//                    fill(gs, simpleOutcome, simpleOutcome.lastPlayerPosition, playernum);
                 }
                 simpleOutcome.lastPlayerPosition = nextCell;
             }
         }
     }
+
 
     public static void takeBonuses(GameState gs, Cell nextCell, SimpleOutcome simpleOutcome, int cellTick) {
         if(nextCell.bonus != null) {
