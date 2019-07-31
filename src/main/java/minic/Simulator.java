@@ -1,5 +1,6 @@
 package minic;
 
+import minic.dto.BonusType;
 import minic.dto.Direction;
 import minic.dto.Turn;
 import minic.simulate.FillResult;
@@ -15,6 +16,8 @@ public class Simulator {
 
         int cellTick = 0;
         SimpleOutcome outcome = new SimpleOutcome();
+        outcome.firstMove = Optional.ofNullable(gamePlan.movePlan.get(1)).orElse(Turn.NONE);
+        outcome.gp = gamePlan;
 
         Position playerPos = gs.findPlayer(playerNum).orElse(null);
         if (playerPos == null) {
@@ -33,12 +36,12 @@ public class Simulator {
                 playerDirection = playerDirection.turn(turn);
             }
 
-            advance1CellTick(gs, playerDirection, outcome, cellTick, playerNum);
+            advance1CellTick(gs, playerDirection, outcome, cellTick, playerNum, true);
         }
         return outcome;
     }
 
-    public static void advance1CellTick(GameState gs, Direction direction, SimpleOutcome simpleOutcome, int cellTick, int playernum) {
+    public static void advance1CellTick(GameState gs, Direction direction, SimpleOutcome simpleOutcome, int cellTick, int playernum, boolean doFill) {
         Optional<Position> nextCellOpt = simpleOutcome.lastPlayerPosition.advance(direction);
         if (!nextCellOpt.isPresent()) {
             simpleOutcome.crossBorderCellTick = cellTick;
@@ -72,7 +75,22 @@ public class Simulator {
                         && gs.at(nextCell).terrPlayerNum == playernum && simpleOutcome.finishOnMyTerrCellTick == -1) {
                     simpleOutcome.finishOnMyTerrCellTick = cellTick;
                     simpleOutcome.completeCellTick = cellTick;
-//                    fill(gs, simpleOutcome, simpleOutcome.lastPlayerPosition, playernum);
+                    if(doFill) {
+                        Set<Position> enclosed = gs.findEnclosed(simpleOutcome.lastPlayerPosition, playernum);
+                        for (Position enclosedPosition : enclosed) {
+                            if(gs.at(enclosedPosition).terrPlayerNum >=0 ) {
+                                simpleOutcome.enemyCellsTaken++;
+                            } else {
+                                simpleOutcome.cellsTaken++;
+                            }
+                            if(gs.at(enclosedPosition).bonus != null) {
+                                if(gs.at(enclosedPosition).bonus != BonusType.saw) {
+                                    simpleOutcome.takeBonus(gs.at(enclosedPosition).bonus, cellTick);
+                                }
+                            }
+                        }
+
+                    }
                 }
                 simpleOutcome.lastPlayerPosition = nextCell;
             }
@@ -82,23 +100,7 @@ public class Simulator {
 
     public static void takeBonuses(GameState gs, Cell nextCell, SimpleOutcome simpleOutcome, int cellTick) {
         if(nextCell.bonus != null) {
-            switch (nextCell.bonus) {
-                case n:
-                    if(simpleOutcome.nitroBonusCellTick == -1) {
-                        simpleOutcome.nitroBonusCellTick = cellTick;
-                    }
-                    break;
-                case s:
-                    if(simpleOutcome.slowBonusCellTick == -1) {
-                        simpleOutcome.slowBonusCellTick = cellTick;
-                    }
-                    break;
-                case saw:
-                    if(simpleOutcome.sawBonusCellTick == -1) {
-                        simpleOutcome.sawBonusCellTick = cellTick;
-                    }
-                    break;
-            }
+            simpleOutcome.takeBonus(nextCell.bonus, cellTick);
         }
     }
 

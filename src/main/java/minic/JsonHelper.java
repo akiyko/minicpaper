@@ -3,6 +3,7 @@ package minic;
 import com.google.gson.Gson;
 import minic.dto.ConfigDto;
 import minic.dto.TickDto;
+import minic.util.Log;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -44,7 +45,7 @@ public class JsonHelper {
 
     public static Object readNextObject(BufferedReader r) throws IOException {
         String json = readNextJson(r);
-        System.err.println(json);
+        Log.stderr(json);
         if(json.contains("start_game")) {
             return readConfig(new StringReader(json));
         } else if(json.contains("tick")) {

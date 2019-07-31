@@ -10,11 +10,10 @@ import minic.dto.Turn;
 import minic.simulate.DuelDecision;
 import minic.simulate.Speed;
 import minic.simulate.TwoPlayerSimulator;
+import minic.util.Log;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class ParametrizedGameStrategy {
     private GameState previousGameState;
@@ -39,7 +38,7 @@ public class ParametrizedGameStrategy {
                 fgps, sgps, configDto);
 
         if (dd.isPresent()) {
-            System.err.println("Duel move: " + dd.get());
+            Log.stderr("Duel move: " + dd.get());
             return dd.get().firstMove;//TODO: rather double check first move
         }
 
@@ -50,7 +49,22 @@ public class ParametrizedGameStrategy {
 
         //TODO: saw - attack, defent from it
         previousGameState = gs;
-        return randomValidMove(gs);
+        return bestMoveNoDuel(gs).firstMove;
+    }
+
+    public SimpleOutcome bestMoveNoDuel(GameState gs) {
+
+        List<GamePlan> gamePlans = GamePlanGenerator.allMovePlansOf(3, 5);
+        gamePlans.addAll(GamePlanGenerator.allMovePlansOf(2, 10));
+        gamePlans.addAll(GamePlanGenerator.allMovePlansOf(1, 20));
+
+        List<SimpleOutcome> outcomes = gamePlans.stream()
+                .map(gp -> Simulator.checkMovePath(gs, gp, 0))
+                .collect(Collectors.toList());
+
+//        outcomes.sort(Comparator.comparingDouble(SimpleOutcome::ppct).reversed());//TODO: for debugging
+
+        return outcomes.stream().max(Comparator.comparingDouble(SimpleOutcome::ppct)).orElse(null);
     }
 
     public Turn randomValidMove(GameState gs) {
