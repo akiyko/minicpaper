@@ -5,6 +5,7 @@ import minic.dto.TickDto;
 import minic.dto.Turn;
 import minic.strategy.GameStrategyParams;
 import minic.strategy.ParametrizedGameStrategy;
+import minic.util.Log;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -30,9 +31,9 @@ public class Main {
                 GameState gs = GameState.fromTick((TickDto) nextTick, configDto);
 
                 Turn move = strategy.nextMove(gs, configDto);
-
+                Log.stderr(move.toString());
                 String command = gs.playerDirection(0).get().turn(move).toString();
-
+                Log.stderr("Command:" + command);
                 System.out.printf("{\"command\": \"%s\"}\n", command);
 
 

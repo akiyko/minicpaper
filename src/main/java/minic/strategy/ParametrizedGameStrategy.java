@@ -32,14 +32,17 @@ public class ParametrizedGameStrategy {
         List<GamePlan> fgps = GamePlanGenerator.allMovePlansOf(2, 5);
         List<GamePlan> sgps = GamePlanGenerator.allMovePlansOf(2, 5);
 
-        Optional<DuelDecision> dd = TwoPlayerSimulator.findWinningDuelTurn(gs, 0, toNearest.getKey(),
+        Optional<DuelDecision> dd = TwoPlayerSimulator.findWinningDuelTurn(gs, 0, toNearest.getKey(),//TODO: NPE??
                 Speed.defaultNormalSpeed(configDto), //TODO: use actual speed
                 Speed.defaultNormalSpeed(configDto), //TODO: use actual speed
                 fgps, sgps, configDto);
 
         if (dd.isPresent()) {
             Log.stderr("Duel move: " + dd.get());
-            return dd.get().firstMove;//TODO: rather double check first move
+            //TODO: simoultaneous cross and close false win test
+            if(dd.get().alternativeFirstTurn == null) {
+                return dd.get().firstMove;//TODO: rather double check first move
+            }
         }
 
 
@@ -48,22 +51,34 @@ public class ParametrizedGameStrategy {
         //how to move to better position (that allows attack other player or take bonus)
 
         //TODO: saw - attack, defent from it
+        Turn forbiddenTurnn = null;
+        if(dd.isPresent()) {
+            forbiddenTurnn = dd.get().forbiddenTurn().orElse(null);
+        }
         previousGameState = gs;
-        return bestMoveNoDuel(gs).firstMove;
+        return bestMoveNoDuel(gs, forbiddenTurnn).firstMove;
     }
 
-    public SimpleOutcome bestMoveNoDuel(GameState gs) {
+    public SimpleOutcome bestMoveNoDuel(GameState gs, Turn forbiddenFirstTurn) {
 
         List<GamePlan> gamePlans = GamePlanGenerator.allMovePlansOf(3, 5);
         gamePlans.addAll(GamePlanGenerator.allMovePlansOf(2, 10));
         gamePlans.addAll(GamePlanGenerator.allMovePlansOf(1, 20));
 
+        if(forbiddenFirstTurn != null) {
+            if (forbiddenFirstTurn == Turn.NONE) {
+                gamePlans.removeIf(gp -> !gp.movePlan.containsKey(1));
+            } else {
+                gamePlans.removeIf(gp -> gp.movePlan.containsKey(1) && gp.movePlan.get(1) == forbiddenFirstTurn);
+            }
+        }
+
         List<SimpleOutcome> outcomes = gamePlans.stream()
                 .map(gp -> Simulator.checkMovePath(gs, gp, 0))
                 .collect(Collectors.toList());
 
-//        outcomes.sort(Comparator.comparingDouble(SimpleOutcome::ppct).reversed());//TODO: for debugging
-
+        outcomes.sort(Comparator.comparingDouble(SimpleOutcome::ppct).reversed());//TODO: for debugging
+        Log.stderr(outcomes.get(0).toString());
         return outcomes.stream().max(Comparator.comparingDouble(SimpleOutcome::ppct)).orElse(null);
     }
 

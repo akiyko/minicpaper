@@ -2,6 +2,8 @@ package minic.simulate;
 
 
 public class TwoPlayersOutcome implements Comparable<TwoPlayersOutcome> {
+
+    public boolean valid = true;
     public boolean complete = false;
     public int firstCrossTraceOfSecondMicroTick = -1;
     public int secondCrossTraceOfFirstMicroTick = -1;

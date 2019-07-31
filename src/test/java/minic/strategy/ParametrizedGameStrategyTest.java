@@ -24,7 +24,7 @@ public class ParametrizedGameStrategyTest {
                 of(3,3),
                 Direction.right);
 
-        SimpleOutcome so = pgs.bestMoveNoDuel(gs);
+        SimpleOutcome so = pgs.bestMoveNoDuel(gs, null);
 
         System.out.println(so);
     }

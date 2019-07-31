@@ -78,7 +78,7 @@ public class TwoPlayerSimulator {
 
             return Optional.of(dd);
         }
-
+        //TODO: draw is loose for both
         //best not losing turn
         worstCases.entrySet().removeIf(e -> e.getValue().secondWinsMicroTick > 0);
         if(worstCases.size() == 1 || worstCases.size() == 2) {//there is a turn leading to defeat
@@ -89,16 +89,22 @@ public class TwoPlayerSimulator {
 
                 return Optional.of(dd);
             } else if(worstCases.size() == 2) {
+                DuelDecision dd = new DuelDecision();
+                List<Map.Entry<Turn, TwoPlayersOutcome>> twoNotLoosingTurns = new ArrayList<>(worstCases.entrySet());
+                dd.firstMove = twoNotLoosingTurns.get(0).getKey();
+                dd.alternativeFirstTurn = twoNotLoosingTurns.get(1).getKey();
+                dd.outcome = twoNotLoosingTurns.get(0).getValue();
 
-                return worstCases.entrySet().stream()
-                        .min(Comparator.comparing(Map.Entry::getValue))
-                        .map(e -> {
-                    DuelDecision dd = new DuelDecision();
-                    dd.firstMove = e.getKey();
-                    dd.outcome = e.getValue();
-
-                    return dd;
-                });
+                return Optional.of(dd);
+//                return worstCases.entrySet().stream()
+//                        .min(Comparator.comparing(Map.Entry::getValue))
+//                        .map(e -> {
+//                    DuelDecision dd = new DuelDecision();
+//                    dd.firstMove = e.getKey();
+//                    dd.outcome = e.getValue();
+//
+//                    return dd;
+//                });
             }
         }
 
@@ -145,7 +151,6 @@ public class TwoPlayerSimulator {
 
         Position firstPrevPosition = firstSimpleOutcome.lastPlayerPosition;
         Position secondPrevPosition = secondSimpleOutcome.lastPlayerPosition;
-
         while (!outcome.complete) {
             boolean firstMoveThisTick = false;
             boolean secondMoveThisTick = false;
@@ -176,10 +181,31 @@ public class TwoPlayerSimulator {
             if (!firstMoveThisTick && !secondMoveThisTick) {
                 continue;
             }
+            if(!firstSimpleOutcome.valid && !secondSimpleOutcome.valid) {
+                outcome.valid = false;
+                outcome.complete = true;
+                break;
+            }
+            if(!firstSimpleOutcome.valid && secondSimpleOutcome.valid) {
+                outcome.complete = true;
+                outcome.secondWinsMicroTick = microTick;
+                break;
+            }
+            if(firstSimpleOutcome.valid && !secondSimpleOutcome.valid) {
+                outcome.complete = true;
+                outcome.firstWinsMicroTick = microTick;
+                break;
+            }
+            if(firstSimpleOutcome.completeCellTick>0 || secondSimpleOutcome.completeCellTick>0) {
+                outcome.complete = true;
+                break;
+            }
+
             //TODO: handle if one of players move is not valid!!!
             Position firstPos = firstSimpleOutcome.lastPlayerPosition;
             Position secondPos = secondSimpleOutcome.lastPlayerPosition;
 
+            //TODO: cross at the sime time other completes???
             if (gs.at(firstPos).tracePlayerNum == secondPlayerNum) {
                 outcome.complete = true;
                 outcome.firstCrossTraceOfSecondMicroTick = microTick;
