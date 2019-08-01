@@ -8,6 +8,8 @@ import minic.dto.Turn;
 import java.util.*;
 
 public class TwoPlayerSimulator {
+    public static final int MAX_MICRO_TICK = 60; //10 cells in standard speed
+
     public static Optional<DuelDecision> findWinningDuelTurn(GameState initial,
                                                              int firstPlayerNum, int secondPlayerNum,
                                                              Speed firstPlayerSpeed,
@@ -155,6 +157,12 @@ public class TwoPlayerSimulator {
             boolean firstMoveThisTick = false;
             boolean secondMoveThisTick = false;
             microTick++;
+
+            if(microTick > MAX_MICRO_TICK) {
+                outcome.complete = true;
+                break;
+            }
+
             if (microTick % firstEveryMt == 0) {
                 firstCellTick++;
                 firstMoveThisTick = true;

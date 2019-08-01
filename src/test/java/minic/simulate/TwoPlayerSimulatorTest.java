@@ -54,9 +54,9 @@ public class TwoPlayerSimulatorTest {
                 fgps, sgps, configDto);
 
         System.out.println(dd.orElse(null));
-        assertTrue(dd.isPresent());
-        assertEquals(dd.get().firstMove, Turn.LEFT);
-        assertEquals(dd.get().alternativeFirstTurn, Turn.NONE);
+        assertFalse(dd.isPresent());
+//        assertEquals(dd.get().firstMove, Turn.LEFT);
+//        assertEquals(dd.get().alternativeFirstTurn, Turn.NONE);
 //        assertTrue(dd.get().outcome.firstWinsMicroTick < 0);
 //        assertTrue(dd.get().outcome.secondWinsMicroTick < 0);
 
