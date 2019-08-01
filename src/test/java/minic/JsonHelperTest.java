@@ -61,6 +61,19 @@ public class JsonHelperTest {
     }
 
     @Test
+    public void testReadTick2() {
+        try(Reader r = readFile("tick-duel/startgameduelbug.json")) {
+            TickDto tickDto = JsonHelper.readTick(r);
+
+            GameState gameState = GameState.fromTick(tickDto, configDto);
+
+            System.out.println(tickDto);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
     public void testReadInput() {
         try(BufferedReader r = readFile("gametracesample1.txt")) {
             ConfigDto c = (ConfigDto) JsonHelper.readNextObject(r);

@@ -24,6 +24,24 @@ public class TwoPlayerSimulatorTest {
     static ConfigDto configDto = JsonHelperTest.configDto;
 
     @Test
+    public void teststartgamebug1() {
+        //Duel move: DuelDecision{firstMove=NONEalternativeFirstTurn=null, outcome=TwoPlayersOutcome{complete=true, firstCrossTraceOfSecondMicroTick=-1, secondCrossTraceOfFirstMicroTick=-1, collisionMicroTick=-1, firstWinsMicroTick=-1, secondWinsMicroTick=-1, drawMicroTick=-1}}
+        GameState gs = JsonHelperTest.readGameState("configsample1.json", "tick-duel/startgameduelbug.json");
+
+        List<GamePlan> fgps = GamePlanGenerator.allMovePlansOf(2, 5);
+        List<GamePlan> sgps = GamePlanGenerator.allMovePlansOf(2, 5);
+
+        Optional<DuelDecision> dd = TwoPlayerSimulator.findWinningDuelTurn(gs, 0, 3,
+                Speed.defaultNormalSpeed(configDto),
+                Speed.defaultNormalSpeed(configDto),
+                fgps, sgps, configDto);
+
+        System.out.println(dd.orElse(null));
+        assertFalse(dd.isPresent());
+
+    }
+
+    @Test
     public void testFirstWin6bug1() {
         GameState gs = JsonHelperTest.readGameState("configsample1.json", "tick-duel/win6bug1.json");
 
@@ -37,8 +55,8 @@ public class TwoPlayerSimulatorTest {
 
         System.out.println(dd.orElse(null));
         assertTrue(dd.isPresent());
-        assertEquals(dd.get().firstMove, Turn.NONE);
-        assertEquals(dd.get().alternativeFirstTurn, Turn.LEFT);
+        assertEquals(dd.get().firstMove, Turn.LEFT);
+        assertEquals(dd.get().alternativeFirstTurn, Turn.NONE);
 //        assertTrue(dd.get().outcome.firstWinsMicroTick < 0);
 //        assertTrue(dd.get().outcome.secondWinsMicroTick < 0);
 
