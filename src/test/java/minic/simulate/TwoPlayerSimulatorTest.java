@@ -12,6 +12,7 @@ import minic.strategy.ParametrizedGameStrategy;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -22,6 +23,61 @@ import static org.junit.Assert.*;
 
 public class TwoPlayerSimulatorTest {
     static ConfigDto configDto = JsonHelperTest.configDto;
+
+    @Test
+    @Ignore
+    public void stupidup155Fixing() {
+        //Duel move: DuelDecision{firstMove=NONEalternativeFirstTurn=null, outcome=TwoPlayersOutcome{complete=true, firstCrossTraceOfSecondMicroTick=-1, secondCrossTraceOfFirstMicroTick=-1, collisionMicroTick=-1, firstWinsMicroTick=-1, secondWinsMicroTick=-1, drawMicroTick=-1}}
+        GameState gs = JsonHelperTest.readGameState("configsample1.json", "tick-duel/stupidup/155.json");
+
+//        List<GamePlan> fgps = GamePlanGenerator.allMovePlansOf(2, 5);
+        GamePlan rd = new GamePlan();
+        rd.movePlan.put(1, Turn.RIGHT);
+        rd.movePlan.put(4, Turn.RIGHT);
+
+        List<GamePlan> fgps = new ArrayList<>();
+        fgps.add(rd);
+
+
+//        List<GamePlan> sgps = GamePlanGenerator.allMovePlansOf(2, 5);
+        GamePlan right = new GamePlan();
+        right.movePlan.put(1, Turn.RIGHT);
+
+        List<GamePlan> sgps = new ArrayList<>();
+        sgps.add(right);
+
+        Optional<DuelDecision> dd = TwoPlayerSimulator.findWinningDuelTurn(gs, 2, 0,
+                Speed.defaultNormalSpeed(configDto),
+                Speed.defaultNormalSpeed(configDto),
+                fgps, sgps, configDto);
+
+        System.out.println(dd.orElse(null));
+        assertTrue(dd.isPresent());
+
+    }
+
+    @Test
+    public void stupidup155() {
+        //Duel move: DuelDecision{firstMove=NONEalternativeFirstTurn=null, outcome=TwoPlayersOutcome{complete=true, firstCrossTraceOfSecondMicroTick=-1, secondCrossTraceOfFirstMicroTick=-1, collisionMicroTick=-1, firstWinsMicroTick=-1, secondWinsMicroTick=-1, drawMicroTick=-1}}
+        GameState gs = JsonHelperTest.readGameState("configsample1.json", "tick-duel/stupidup/155.json");
+
+        List<GamePlan> fgps = GamePlanGenerator.allMovePlansOf(2, 5);
+        List<GamePlan> sgps = GamePlanGenerator.allMovePlansOf(2, 5);
+//        GamePlan right = new GamePlan();
+//        right.movePlan.put(3, Turn.RIGHT);
+
+//        List<GamePlan> sgps = new ArrayList<>();
+//        sgps.add(right);
+
+        Optional<DuelDecision> dd = TwoPlayerSimulator.findWinningDuelTurn(gs, 0, 2,
+                Speed.defaultNormalSpeed(configDto),
+                Speed.defaultNormalSpeed(configDto),
+                fgps, sgps, configDto);
+
+        System.out.println(dd.orElse(null));
+        assertTrue(dd.isPresent());
+
+    }
 
     @Test
     public void teststartgamebug1() {
@@ -130,7 +186,6 @@ public class TwoPlayerSimulatorTest {
     }
 
     @Test
-    @Ignore//TODO: fix test!!!
     public void simulateFindNotLoosing() throws Exception {
         GameState gs = GameState.emptyField(configDto);
 

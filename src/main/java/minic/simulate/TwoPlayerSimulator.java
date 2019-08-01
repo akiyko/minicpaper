@@ -82,15 +82,17 @@ public class TwoPlayerSimulator {
         }
         //TODO: draw is loose for both
         //best not losing turn
+        //TODO: not loosing turn is not working!!! - reiterate min max ???
+
         worstCases.entrySet().removeIf(e -> e.getValue().secondWinsMicroTick > 0);
-        if(worstCases.size() == 1 || worstCases.size() == 2) {//there is a turn leading to defeat
-            if(worstCases.size() == 1) {
+        if (worstCases.size() == 1 || worstCases.size() == 2) {//there is a turn leading to defeat
+            if (worstCases.size() == 1) {
                 DuelDecision dd = new DuelDecision();
                 dd.firstMove = worstCases.entrySet().iterator().next().getKey();
                 dd.outcome = worstCases.entrySet().iterator().next().getValue();
 
                 return Optional.of(dd);
-            } else if(worstCases.size() == 2) {
+            } else if (worstCases.size() == 2) {
                 DuelDecision dd = new DuelDecision();
                 List<Map.Entry<Turn, TwoPlayersOutcome>> twoNotLoosingTurns = new ArrayList<>(worstCases.entrySet());
                 dd.firstMove = twoNotLoosingTurns.get(0).getKey();
@@ -114,8 +116,6 @@ public class TwoPlayerSimulator {
 
         return Optional.empty(); //no guaranteed win
     }
-
-
 
 
     //TODO: shift - who will be first in equal situation?
@@ -158,7 +158,7 @@ public class TwoPlayerSimulator {
             boolean secondMoveThisTick = false;
             microTick++;
 
-            if(microTick > MAX_MICRO_TICK) {
+            if (microTick > MAX_MICRO_TICK) {
                 outcome.complete = true;
                 break;
             }
@@ -189,22 +189,22 @@ public class TwoPlayerSimulator {
             if (!firstMoveThisTick && !secondMoveThisTick) {
                 continue;
             }
-            if(!firstSimpleOutcome.valid && !secondSimpleOutcome.valid) {
+            if (!firstSimpleOutcome.valid && !secondSimpleOutcome.valid) {
                 outcome.valid = false;
                 outcome.complete = true;
                 break;
             }
-            if(!firstSimpleOutcome.valid && secondSimpleOutcome.valid) {
+            if (!firstSimpleOutcome.valid && secondSimpleOutcome.valid) {
                 outcome.complete = true;
                 outcome.secondWinsMicroTick = microTick;
                 break;
             }
-            if(firstSimpleOutcome.valid && !secondSimpleOutcome.valid) {
+            if (firstSimpleOutcome.valid && !secondSimpleOutcome.valid) {
                 outcome.complete = true;
                 outcome.firstWinsMicroTick = microTick;
                 break;
             }
-            if(firstSimpleOutcome.completeCellTick>0 || secondSimpleOutcome.completeCellTick>0) {
+            if (firstSimpleOutcome.completeCellTick > 0 && secondSimpleOutcome.completeCellTick > 0) {
                 outcome.complete = true;
                 break;
             }
@@ -216,11 +216,15 @@ public class TwoPlayerSimulator {
             //TODO: cross at the sime time other completes???
             if (gs.at(firstPos).tracePlayerNum == secondPlayerNum) {
                 outcome.complete = true;
-                outcome.firstCrossTraceOfSecondMicroTick = microTick;
+                if(secondSimpleOutcome.finishOnMyTerrCellTick < 0) {
+                    outcome.firstCrossTraceOfSecondMicroTick = microTick;
+                }
             }
             if (gs.at(secondPos).tracePlayerNum == firstPlayerNum) {
                 outcome.complete = true;
-                outcome.secondCrossTraceOfFirstMicroTick = microTick;
+                if(firstSimpleOutcome.finishOnMyTerrCellTick < 0) {
+                    outcome.secondCrossTraceOfFirstMicroTick = microTick;
+                }
             }
 
             if (firstPos.equals(secondPos) || firstPos.equals(secondPrevPosition) || secondPos.equals(firstPrevPosition)) {

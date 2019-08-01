@@ -3,10 +3,6 @@ package minic;
 import minic.dto.BonusType;
 import minic.dto.Direction;
 
-/**
- * @author akiyko
- * @since 7/19/2019.
- */
 public class Cell implements Cloneable{
     public int playernum = -1; //0 for me
     public int terrPlayerNum = -1;

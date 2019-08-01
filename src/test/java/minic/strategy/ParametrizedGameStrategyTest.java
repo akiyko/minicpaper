@@ -2,6 +2,7 @@ package minic.strategy;
 
 import minic.*;
 import minic.dto.Direction;
+import minic.dto.Turn;
 import org.junit.Test;
 
 import java.util.List;
@@ -11,6 +12,22 @@ import static minic.Position.of;
 
 
 public class ParametrizedGameStrategyTest {
+
+
+
+    @Test
+    public void testStupidUp155() throws Exception {
+
+        ParametrizedGameStrategy pgs = new ParametrizedGameStrategy(GameStrategyParams.fromArgs(new String[]{}));
+
+        GameState gs = JsonHelperTest.readGameState("configsample1.json", "tick-duel/stupidup/155.json");
+
+        Turn nextMove = pgs.nextMove(gs, JsonHelperTest.configDto);
+
+        System.out.println(nextMove);
+
+
+    }
 
     @Test
     public void testBestMove1() throws Exception {

@@ -32,19 +32,22 @@ public class ParametrizedGameStrategy {
         List<GamePlan> fgps = GamePlanGenerator.allMovePlansOf(2, 5);
         List<GamePlan> sgps = GamePlanGenerator.allMovePlansOf(2, 5);
 
-        Optional<DuelDecision> dd = TwoPlayerSimulator.findWinningDuelTurn(gs, 0, toNearest.getKey(),//TODO: NPE??
-                Speed.defaultNormalSpeed(configDto), //TODO: use actual speed
-                Speed.defaultNormalSpeed(configDto), //TODO: use actual speed
-                fgps, sgps, configDto);
+        Optional<DuelDecision> dd = Optional.empty();
 
-        if (dd.isPresent()) {
-            Log.stderr("Duel move: " + dd.get());
-            //TODO: simoultaneous cross and close false win test
-            if(dd.get().alternativeFirstTurn == null) {
-                return dd.get().firstMove;//TODO: rather double check first move
+        if(toNearest != null) {
+            dd = TwoPlayerSimulator.findWinningDuelTurn(gs, 0, toNearest.getKey(),
+                    Speed.defaultNormalSpeed(configDto), //TODO: use actual speed
+                    Speed.defaultNormalSpeed(configDto), //TODO: use actual speed
+                    fgps, sgps, configDto);
+
+            if (dd.isPresent()) {
+                Log.stderr("Duel move: " + dd.get());
+                //TODO: simoultaneous cross and close false win test
+                if (dd.get().alternativeFirstTurn == null) {
+                    return dd.get().firstMove;//TODO: rather double check first move
+                }
             }
         }
-
 
         //2. Otherwise - Random moves - score function
         //score function should take into account poisitioning

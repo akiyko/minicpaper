@@ -11,6 +11,7 @@ public class GameState {
     public Cell[][] cells;
     public ConfigDto configDto;
     public final Map<Integer, Position> playersInitialPos = new HashMap<>();
+    public final Map<Integer, Integer> playersTraceLen = new HashMap<>();
 
     public static GameState emptyField(ConfigDto configDto) {
         GameState gameState = new GameState();
@@ -28,6 +29,18 @@ public class GameState {
         }
 
         return gameState;
+    }
+
+    public void computeTraceLens() {
+        for (int i = 0; i < cells.length; i++) {
+            for (int j = 0; j < cells[i].length; j++) {
+
+                if(cells[i][j].tracePlayerNum >=0 ) {
+                    playersTraceLen.putIfAbsent(cells[i][j].tracePlayerNum, 0);
+                    playersTraceLen.put(cells[i][j].tracePlayerNum, playersTraceLen.get(cells[i][j].tracePlayerNum) + 1);
+                }
+            }
+        }
     }
 
     public GameState withPlayer(ConfigDto configDto,
@@ -61,6 +74,8 @@ public class GameState {
 
         addPlayers(tickDto, gameState);
         addBonuses(tickDto, gameState);
+
+        gameState.computeTraceLens();
 
         return gameState;
     }
@@ -224,6 +239,8 @@ public class GameState {
         GameState gameState = new GameState();
         gameState.configDto = this.configDto;
         gameState.cells = new Cell[configDto.params.x_cells_count][];
+        gameState.playersInitialPos.putAll(playersInitialPos);
+        gameState.playersTraceLen.putAll(playersTraceLen);
 
         for (int i = 0; i < cells.length; i++) {
             gameState.cells[i] = new Cell[configDto.params.y_cells_count];
