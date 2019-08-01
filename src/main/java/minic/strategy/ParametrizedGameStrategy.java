@@ -8,6 +8,7 @@ import minic.Simulator;
 import minic.dto.ConfigDto;
 import minic.dto.Turn;
 import minic.simulate.DuelDecision;
+import minic.simulate.DuelDecisionType;
 import minic.simulate.Speed;
 import minic.simulate.TwoPlayerSimulator;
 import minic.util.Log;
@@ -42,9 +43,17 @@ public class ParametrizedGameStrategy {
 
             if (dd.isPresent()) {
                 Log.stderr("Duel move: " + dd.get());
-                //TODO: simoultaneous cross and close false win test
-                if (dd.get().alternativeFirstTurn == null) {
-                    return dd.get().firstMove;//TODO: rather double check first move
+
+                switch(dd.get().type) {
+                    case WINNING:
+                        return dd.get().firstMove;
+                    case LOSING_IN_SOME_MOVES:
+                        if(dd.get().secondPlayerBestOptions.size() == 1) {
+                            return dd.get().secondPlayerBestOptions.keySet().iterator().next();//the only not losing option
+                        }
+                        break;
+                    case POTENTIALLY_LOSING_IN_ALL_MOVES:
+                        break;//TODO: think later...
                 }
             }
         }
@@ -53,10 +62,14 @@ public class ParametrizedGameStrategy {
         //score function should take into account poisitioning
         //how to move to better position (that allows attack other player or take bonus)
 
-        //TODO: saw - attack, defent from it
+        //TODO: saw - attack, defend from it
         Turn forbiddenTurnn = null;
-        if(dd.isPresent()) {
-            forbiddenTurnn = dd.get().forbiddenTurn().orElse(null);
+        if(dd.isPresent() && dd.get().type == DuelDecisionType.LOSING_IN_SOME_MOVES) {
+            EnumSet<Turn> allturns = EnumSet.allOf(Turn.class);
+            allturns.removeAll(dd.get().secondPlayerBestOptions.keySet());
+            if(allturns.size() == 1) {
+                forbiddenTurnn = allturns.iterator().next();
+            }
         }
         previousGameState = gs;
         return bestMoveNoDuel(gs, forbiddenTurnn).firstMove;

@@ -35,7 +35,6 @@ public class TwoPlayerSimulator {
 
         Turn bestWinningTurn = null;
         TwoPlayersOutcome bestWinningTurnWorstOutcome = null;
-        Map<Turn, TwoPlayersOutcome> worstCases = new HashMap<>();
         for (Turn firstTurn : Turn.values()) {
             if (!firstPlayerTurns.containsKey(firstTurn)) {
                 continue;
@@ -70,53 +69,96 @@ public class TwoPlayerSimulator {
                     bestWinningTurnWorstOutcome = worst;
                 }
             }
-            worstCases.put(firstTurn, worst);
+//            worstCases.put(firstTurn, worst);
 
         }
         if (bestWinningTurn != null && bestWinningTurnWorstOutcome != null) {
-            DuelDecision dd = new DuelDecision();
+            DuelDecision dd = new DuelDecision(DuelDecisionType.WINNING);
             dd.firstMove = bestWinningTurn;
             dd.outcome = bestWinningTurnWorstOutcome;
 
             return Optional.of(dd);
         }
-        //TODO: draw is loose for both
+        //TODO: draw is lose for both
         //best not losing turn
         //TODO: not loosing turn is not working!!! - reiterate min max ???
 
-        worstCases.entrySet().removeIf(e -> e.getValue().secondWinsMicroTick > 0);
-        if (worstCases.size() == 1 || worstCases.size() == 2) {//there is a turn leading to defeat
-            if (worstCases.size() == 1) {
-                DuelDecision dd = new DuelDecision();
-                dd.firstMove = worstCases.entrySet().iterator().next().getKey();
-                dd.outcome = worstCases.entrySet().iterator().next().getValue();
+        //now try to find win for second player
+        Map<Turn, TwoPlayersOutcome> bestOutcomesForSecond = new HashMap<>();
 
-                return Optional.of(dd);
-            } else if (worstCases.size() == 2) {
-                DuelDecision dd = new DuelDecision();
-                List<Map.Entry<Turn, TwoPlayersOutcome>> twoNotLoosingTurns = new ArrayList<>(worstCases.entrySet());
-                dd.firstMove = twoNotLoosingTurns.get(0).getKey();
-                dd.alternativeFirstTurn = twoNotLoosingTurns.get(1).getKey();
-                dd.outcome = twoNotLoosingTurns.get(0).getValue();
-
-                return Optional.of(dd);
-//                return worstCases.entrySet().stream()
-//                        .min(Comparator.comparing(Map.Entry::getValue))
-//                        .map(e -> {
-//                    DuelDecision dd = new DuelDecision();
-//                    dd.firstMove = e.getKey();
-//                    dd.outcome = e.getValue();
-//
-//                    return dd;
-//                });
+        for (Turn firstTurn : Turn.values()) {
+            if (!firstPlayerTurns.containsKey(firstTurn)) {
+                continue;
             }
+            TwoPlayersOutcome worstForSecond = null;
+            for (Integer i : firstPlayerTurns.get(firstTurn)) {
+                TwoPlayersOutcome bestForSecond = null;
+                for (int j = 0; j < secondPlayerPlans.size(); j++) {
+                    if (bestForSecond == null) {
+                        bestForSecond = outcomes[i][j];
+                    } else {
+                        bestForSecond = bestForSecond.compareTo(outcomes[i][j]) > 0
+                                ? bestForSecond : outcomes[i][j];
+                    }
+                }
+                if (worstForSecond == null) {
+                    worstForSecond = bestForSecond;
+                } else {
+                    worstForSecond = worstForSecond.compareTo(bestForSecond) < 0
+                            ? worstForSecond : bestForSecond;
+                }
+            }
+            //if worst is still winning then return it
+            bestOutcomesForSecond.put(firstTurn, worstForSecond);
         }
+
+        if(allWinForSecond(bestOutcomesForSecond)) {
+            DuelDecision dd = new DuelDecision(DuelDecisionType.POTENTIALLY_LOSING_IN_ALL_MOVES);
+            dd.secondPlayerBestOptions.putAll(bestOutcomesForSecond);
+
+            return Optional.of(dd);
+        }
+
+        if(containsWinForSecond(bestOutcomesForSecond)) {
+            DuelDecision dd = new DuelDecision(DuelDecisionType.POTENTIALLY_LOSING_IN_ALL_MOVES);
+            dd.secondPlayerBestOptions.putAll(bestOutcomesForSecond);
+            dd.secondPlayerBestOptions.entrySet().removeIf(e -> e.getValue().secondWinsMicroTick > 0);
+
+            return Optional.of(dd);
+
+        }
+
+//        worstCases.entrySet().removeIf(e -> e.getValue().secondWinsMicroTick > 0);
+//        if (worstCases.size() == 1 || worstCases.size() == 2) {//there is a turn leading to defeat
+//            if (worstCases.size() == 1) {
+//                DuelDecision dd = new DuelDecision();
+//                dd.firstMove = worstCases.entrySet().iterator().next().getKey();
+//                dd.outcome = worstCases.entrySet().iterator().next().getValue();
+//
+//                return Optional.of(dd);
+//            } else if (worstCases.size() == 2) {
+//                DuelDecision dd = new DuelDecision();
+//                List<Map.Entry<Turn, TwoPlayersOutcome>> twoNotLoosingTurns = new ArrayList<>(worstCases.entrySet());
+//                dd.firstMove = twoNotLoosingTurns.get(0).getKey();
+//                dd.alternativeFirstTurn = twoNotLoosingTurns.get(1).getKey();
+//                dd.outcome = twoNotLoosingTurns.get(0).getValue();
+//
+//                return Optional.of(dd);
+//            }
+//        }
 
         //TODO: not loosing move
 
         return Optional.empty(); //no guaranteed win
     }
 
+    static boolean containsWinForSecond(Map<Turn, TwoPlayersOutcome> bestForSecond) {
+        return bestForSecond.values().stream().anyMatch(tpo -> tpo.secondWinsMicroTick > 0);
+    }
+
+    static boolean allWinForSecond(Map<Turn, TwoPlayersOutcome> bestForSecond) {
+        return !bestForSecond.values().stream().anyMatch(tpo -> tpo.secondWinsMicroTick < 0);
+    }
 
     //TODO: shift - who will be first in equal situation?
     //TODO: maybe use micro tick shift for second player?
@@ -246,7 +288,8 @@ public class TwoPlayerSimulator {
                 } else if (firstTraceLen > secondTraceLen) {
                     outcome.secondWinsMicroTick = microTick;
                 } else {
-                    outcome.drawMicroTick = microTick;
+                    outcome.drawMicroTick = microTick;//draw is death for both
+                    outcome.secondWinsMicroTick = microTick;//assume second player can suicide but I can't
                 }
             }
             if (firstMoveThisTick) {
