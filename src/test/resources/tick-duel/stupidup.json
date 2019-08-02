@@ -178,3 +178,5 @@ Command:down
 SimpleOutcome{firstMove=NONE, valid=true, completeCellTick=14, crossMyTraceCellTick=-1, crossBorderCellTick=-1, finishOnMyTerrCellTick=14, lastPlayerPosition={1, 8}, nitroBonusCellTick=-1, slowBonusCellTick=-1, sawBonusCellTick=-1, cellsTaken=41, enemyCellsTaken=18}
 NONE
 Command:down
+
+//TODO: NO TRACE ON YOUR TERR!!!

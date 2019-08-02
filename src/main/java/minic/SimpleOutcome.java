@@ -28,15 +28,21 @@ public class SimpleOutcome {
     public int cellsTaken = 0;
     public int enemyCellsTaken = 0;
 
+    public int finishOnMyTerrThreshold = 5;
+
     /**
      * points per cell tick
      */
     public double ppct() {
         if (completeCellTick > 0) {
-            return (enemyCellsTaken * 5 + cellsTaken) / (double) completeCellTick
+            double val =  (enemyCellsTaken * 5 + cellsTaken) / (double) completeCellTick
                     + nitroAddition()
                     + sawAddition()
                     + slowFine();
+            if(finishOnMyTerrCellTick >= finishOnMyTerrThreshold) {
+                val = val * ((double)finishOnMyTerrThreshold / finishOnMyTerrCellTick) - 3;
+            }
+            return val;
         } else {
             return -1;
         }

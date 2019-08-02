@@ -16,6 +16,7 @@ public class Simulator {
 
         int cellTick = 0;
         SimpleOutcome outcome = new SimpleOutcome();
+
         outcome.firstMove = Optional.ofNullable(gamePlan.movePlan.get(1)).orElse(Turn.NONE);
         outcome.gp = gamePlan;
 

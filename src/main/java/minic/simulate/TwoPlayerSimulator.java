@@ -120,7 +120,7 @@ public class TwoPlayerSimulator {
         }
 
         if(containsWinForSecond(bestOutcomesForSecond)) {
-            DuelDecision dd = new DuelDecision(DuelDecisionType.POTENTIALLY_LOSING_IN_ALL_MOVES);
+            DuelDecision dd = new DuelDecision(DuelDecisionType.LOSING_IN_SOME_MOVES);
             dd.secondPlayerBestOptions.putAll(bestOutcomesForSecond);
             dd.secondPlayerBestOptions.entrySet().removeIf(e -> e.getValue().secondWinsMicroTick > 0);
 

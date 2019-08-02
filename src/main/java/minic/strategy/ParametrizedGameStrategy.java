@@ -29,6 +29,7 @@ public class ParametrizedGameStrategy {
         IndividualPositioningInfo positioning = PositioninCalculator.forExistingPlayer(gs, 0);
 
         Map.Entry<Integer, DirectionTo> toNearest = positioning.nearestEnemy();
+        Integer toNearestEnemyCells = 20;
 
         List<GamePlan> fgps = GamePlanGenerator.allMovePlansOf(2, 5);
         List<GamePlan> sgps = GamePlanGenerator.allMovePlansOf(2, 5);
@@ -36,6 +37,7 @@ public class ParametrizedGameStrategy {
         Optional<DuelDecision> dd = Optional.empty();
 
         if(toNearest != null) {
+            toNearestEnemyCells = toNearest.getValue().len();
             dd = TwoPlayerSimulator.findWinningDuelTurn(gs, 0, toNearest.getKey(),
                     Speed.defaultNormalSpeed(configDto), //TODO: use actual speed
                     Speed.defaultNormalSpeed(configDto), //TODO: use actual speed
@@ -72,10 +74,10 @@ public class ParametrizedGameStrategy {
             }
         }
         previousGameState = gs;
-        return bestMoveNoDuel(gs, forbiddenTurnn).firstMove;
+        return bestMoveNoDuel(gs, forbiddenTurnn, toNearestEnemyCells).firstMove;
     }
 
-    public SimpleOutcome bestMoveNoDuel(GameState gs, Turn forbiddenFirstTurn) {
+    public SimpleOutcome bestMoveNoDuel(GameState gs, Turn forbiddenFirstTurn, Integer toNearestEnemy) {
 
         List<GamePlan> gamePlans = GamePlanGenerator.allMovePlansOf(3, 5);
         gamePlans.addAll(GamePlanGenerator.allMovePlansOf(2, 10));
@@ -92,6 +94,9 @@ public class ParametrizedGameStrategy {
         List<SimpleOutcome> outcomes = gamePlans.stream()
                 .map(gp -> Simulator.checkMovePath(gs, gp, 0))
                 .collect(Collectors.toList());
+        outcomes.forEach(so -> {
+            so.finishOnMyTerrThreshold = toNearestEnemy;
+        });
 
         outcomes.sort(Comparator.comparingDouble(SimpleOutcome::ppct).reversed());//TODO: for debugging
         Log.stderr(outcomes.get(0).toString());

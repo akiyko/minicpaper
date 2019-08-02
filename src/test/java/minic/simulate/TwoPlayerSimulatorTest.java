@@ -80,6 +80,24 @@ public class TwoPlayerSimulatorTest {
     }
 
     @Test
+    public void nextlosebug() {
+        GameState gs = JsonHelperTest.readGameState("configsample1.json", "tick-duel/notlosebug1.json");
+
+        List<GamePlan> fgps = GamePlanGenerator.allMovePlansOf(3, 5);
+        List<GamePlan> sgps = GamePlanGenerator.allMovePlansOf(3, 5);
+
+
+        Optional<DuelDecision> dd = TwoPlayerSimulator.findWinningDuelTurn(gs, 0, 2,
+                Speed.defaultNormalSpeed(configDto),
+                Speed.defaultNormalSpeed(configDto),
+                fgps, sgps, configDto);
+
+        System.out.println(dd.orElse(null));
+        assertTrue(dd.isPresent());
+
+    }
+
+    @Test
     public void teststartgamebug1() {
         //Duel move: DuelDecision{firstMove=NONEalternativeFirstTurn=null, outcome=TwoPlayersOutcome{complete=true, firstCrossTraceOfSecondMicroTick=-1, secondCrossTraceOfFirstMicroTick=-1, collisionMicroTick=-1, firstWinsMicroTick=-1, secondWinsMicroTick=-1, drawMicroTick=-1}}
         GameState gs = JsonHelperTest.readGameState("configsample1.json", "tick-duel/startgameduelbug.json");
@@ -186,6 +204,7 @@ public class TwoPlayerSimulatorTest {
     }
 
     @Test
+    @Ignore
     public void simulateFindNotLoosing() throws Exception {
         GameState gs = GameState.emptyField(configDto);
 
