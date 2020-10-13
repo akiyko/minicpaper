@@ -39,7 +39,7 @@ python localrunner.py -p1 "java -jar C:\dev\minicpaper\target\minic-jar-with-dep
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.12</version>
+            <version>4.13.1</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
